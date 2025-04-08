@@ -79,11 +79,6 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles(); // 🔹 nécessaire pour charger les fichiers wwwroot
-
-app.UseRouting();     // 🔹 nécessaire pour activer le routing
-app.UseAuthentication(); // 🔹 nécessaire pour l'auth
-app.UseAuthorization();
 
 app.UseAntiforgery();
 
