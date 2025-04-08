@@ -16,6 +16,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\EntityFrameworkComm\EntityFrameworkComm.csproj" />
+      <ProjectReference Include="..\TheApiDto\TheApiDto.csproj" />
     </ItemGroup>
 
     <ItemGroup>
