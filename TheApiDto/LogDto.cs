@@ -2,7 +2,7 @@
 
 public class LogDto
 {
-    public int IdAuditLog { get; set; }
+    public int IdLog { get; set; }
     public DateTime ActionDate { get; set; }
     public string ActionType { get; set; } = String.Empty;
     public string Details { get; set; } = String.Empty;

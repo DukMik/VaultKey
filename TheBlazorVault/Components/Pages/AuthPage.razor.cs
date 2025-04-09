@@ -1,17 +1,20 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using EntityFrameworkComm.EfModel.Models;
+using Microsoft.AspNetCore.Components;
+using TheBlazorVault.Service;
+using TheApiDto;
 
-namespace ArchiWebEntraID.Components.Pages;
+namespace TheBlazorVault.Components.Pages;
 
 public partial class AuthPage
 {
     [Parameter]
-    public string? Action { get; set; }
+    public string? Action { get; set; }   
 
-   // protected override void OnParametersSet()
-   // {
-   //     if (Action == "logged-out")
-   //     {
-   //         NavigationManager.NavigateTo("/");
-   //     }
-   // }
+    protected override void OnParametersSet()
+    {
+        if (Action == "logged-out")
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
 }

@@ -30,11 +30,11 @@ public class Log
         public virtual required User User { get; set; }
 
         [ForeignKey("VaultId")]
-        public virtual required Vault Vault { get; set; }
+        public virtual Vault? Vault { get; set; }
 
         [ForeignKey("EntryId")]
-        public virtual required Entrie Entrie { get; set; }
+        public virtual Entrie? Entrie { get; set; }
 
         [ForeignKey("DataId")]
-        public virtual required EncryptedData EncryptedData { get; set; }
+        public virtual EncryptedData? EncryptedData { get; set; }
 }

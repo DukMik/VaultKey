@@ -35,7 +35,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
 using MudBlazor.Services;
-using TheBlazorVault.Components;
+using TheBlazorVault.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 // Ajouter l'authentification JWT
@@ -65,7 +65,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddMudServices();
 
-//builder.Services.AddScoped<VaultService>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 
@@ -79,8 +79,6 @@ if (!app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
-
-
 
 app.UseAntiforgery();
 

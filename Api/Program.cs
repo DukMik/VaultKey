@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
+using Api.Middleware;
+using Api.Repositories;
+using Api.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,16 +37,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
 //Middlewares
-//builder.Services.AddScoped<GetOrCreateAppUserIdMiddleware>();
+builder.Services.AddScoped<GetOrCreateAppUserIdMiddleware>();
 
 builder.Services.AddDbContextFactory<Context>(options => 
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//builder.Services
-//    .AddScoped<AppUserRepository>();
+builder.Services.AddScoped<UserRepositorie>();
 
-//builder.Services
-//    .AddScoped<AppUserService>();
+builder.Services.AddScoped<UserService>();
 
 
 // Add services to the container.
@@ -87,7 +88,7 @@ builder.Services.AddDbContextFactory<Context>(options =>
 
  app.UseAuthorization();
 
- //app.UseMiddleware<GetOrCreateAppUserIdMiddleware>();
+ app.UseMiddleware<GetOrCreateAppUserIdMiddleware>();
 
  app.MapControllers().RequireAuthorization();
 

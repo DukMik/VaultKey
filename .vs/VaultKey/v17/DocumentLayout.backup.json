@@ -3,20 +3,36 @@
   "WorkspaceRootPath": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{046D5AF1-83C4-4342-9AC8-455D2599A525}|Api\\Api.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\api\\middleware\\getorcreateappuseridmiddleware .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{046D5AF1-83C4-4342-9AC8-455D2599A525}|Api\\Api.csproj|solutionrelative:api\\middleware\\getorcreateappuseridmiddleware .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{046D5AF1-83C4-4342-9AC8-455D2599A525}|Api\\Api.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\api\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{046D5AF1-83C4-4342-9AC8-455D2599A525}|Api\\Api.csproj|solutionrelative:api\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{046D5AF1-83C4-4342-9AC8-455D2599A525}|Api\\Api.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\api\\controller\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{046D5AF1-83C4-4342-9AC8-455D2599A525}|Api\\Api.csproj|solutionrelative:api\\controller\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3BB30E69-EFCA-4AED-8A3C-806E292650E4}|TheApiDto\\TheApiDto.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theapidto\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3BB30E69-EFCA-4AED-8A3C-806E292650E4}|TheApiDto\\TheApiDto.csproj|solutionrelative:theapidto\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\components\\pages\\home.razor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\components\\pages\\home.razor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\components\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\components\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +42,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Bookmark",
@@ -42,54 +58,107 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\Api\\Service\\UserService.cs",
+              "RelativeDocumentMoniker": "Api\\Service\\UserService.cs",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\Api\\Service\\UserService.cs",
+              "RelativeToolTip": "Api\\Service\\UserService.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA8AAABRAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-09T15:29:34.739Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UserDto.cs",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheApiDto\\UserDto.cs",
+              "RelativeDocumentMoniker": "TheApiDto\\UserDto.cs",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheApiDto\\UserDto.cs",
+              "RelativeToolTip": "TheApiDto\\UserDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-09T15:24:29.019Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Home.razor.cs",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\Home.razor.cs",
+              "RelativeDocumentMoniker": "TheBlazorVault\\Components\\Pages\\Home.razor.cs",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\Home.razor.cs",
+              "RelativeToolTip": "TheBlazorVault\\Components\\Pages\\Home.razor.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-09T15:04:23.592Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "Home.razor",
               "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\Home.razor",
               "RelativeDocumentMoniker": "TheBlazorVault\\Components\\Pages\\Home.razor",
               "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\Home.razor",
               "RelativeToolTip": "TheBlazorVault\\Components\\Pages\\Home.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-04-09T09:53:46.391Z",
+              "WhenOpened": "2025-04-09T15:03:53.197Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MainLayout.razor",
-              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Layout\\MainLayout.razor",
-              "RelativeDocumentMoniker": "TheBlazorVault\\Components\\Layout\\MainLayout.razor",
-              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Layout\\MainLayout.razor*",
-              "RelativeToolTip": "TheBlazorVault\\Components\\Layout\\MainLayout.razor*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-04-09T09:53:19.655Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "App.razor",
-              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\App.razor",
-              "RelativeDocumentMoniker": "TheBlazorVault\\Components\\App.razor",
-              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\App.razor*",
-              "RelativeToolTip": "TheBlazorVault\\Components\\App.razor*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-04-09T09:52:45.954Z",
+              "DocumentIndex": 0,
+              "Title": "GetOrCreateAppUserIdMiddleware .cs",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\Api\\Middleware\\GetOrCreateAppUserIdMiddleware .cs",
+              "RelativeDocumentMoniker": "Api\\Middleware\\GetOrCreateAppUserIdMiddleware .cs",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\Api\\Middleware\\GetOrCreateAppUserIdMiddleware .cs",
+              "RelativeToolTip": "Api\\Middleware\\GetOrCreateAppUserIdMiddleware .cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAQwCYAAABKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-09T14:20:00.27Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Program.cs",
-              "RelativeDocumentMoniker": "TheBlazorVault\\Program.cs",
-              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Program.cs",
-              "RelativeToolTip": "TheBlazorVault\\Program.cs",
-              "ViewState": "AgIAADwAAAAAAAAAAAAAAEEAAAAfAAAAAAAAAA==",
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\Api\\Controller\\UsersController.cs",
+              "RelativeDocumentMoniker": "Api\\Controller\\UsersController.cs",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\Api\\Controller\\UsersController.cs",
+              "RelativeToolTip": "Api\\Controller\\UsersController.cs",
+              "ViewState": "AgIAACUAAAAAAAAAAAAywBYAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-09T08:35:26.909Z",
+              "WhenOpened": "2025-04-09T14:59:23.717Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "_Imports.razor",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\_Imports.razor",
+              "RelativeDocumentMoniker": "TheBlazorVault\\Components\\_Imports.razor",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\_Imports.razor",
+              "RelativeToolTip": "TheBlazorVault\\Components\\_Imports.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-09T14:58:48.267Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Service\\UserService.cs",
+              "RelativeDocumentMoniker": "TheBlazorVault\\Service\\UserService.cs",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Service\\UserService.cs",
+              "RelativeToolTip": "TheBlazorVault\\Service\\UserService.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABgAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-09T14:47:58.985Z",
               "EditorCaption": ""
             }
           ]

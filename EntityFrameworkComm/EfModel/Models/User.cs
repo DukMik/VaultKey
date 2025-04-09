@@ -12,8 +12,8 @@ public class User
     
     public Guid EntraIdUser { get; set; }
 
-    public required List<Vault> Vaults { get; set; }
-    public required List<Log> AuditLogs { get; set; }
+    public List<Vault>? Vaults { get; set; }
+    public required List<Log> Logs { get; set; } = new List<Log>();
 } 
 
 internal class UserConfiguration : IEntityTypeConfiguration<User>
