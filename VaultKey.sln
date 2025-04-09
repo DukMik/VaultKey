@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35818.85
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFrameworkComm", "EntityFrameworkComm\EntityFrameworkComm.csproj", "{20FDA2CF-6493-4ABE-A78F-9D45A802915C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{046D5AF1-83C4-4342-9AC8-455D2599A525}"
@@ -19,16 +22,19 @@ Global
 		{20FDA2CF-6493-4ABE-A78F-9D45A802915C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{046D5AF1-83C4-4342-9AC8-455D2599A525}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{046D5AF1-83C4-4342-9AC8-455D2599A525}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{046D5AF1-83C4-4342-9AC8-455D2599A525}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{046D5AF1-83C4-4342-9AC8-455D2599A525}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{046D5AF1-83C4-4342-9AC8-455D2599A525}.Release|Any CPU.Build.0 = Release|Any CPU
-		{046D5AF1-83C4-4342-9AC8-455D2599A525}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{3BB30E69-EFCA-4AED-8A3C-806E292650E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3BB30E69-EFCA-4AED-8A3C-806E292650E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BB30E69-EFCA-4AED-8A3C-806E292650E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7D552F3E-B6DC-448B-9122-7B98F65D9A63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7D552F3E-B6DC-448B-9122-7B98F65D9A63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D552F3E-B6DC-448B-9122-7B98F65D9A63}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{7D552F3E-B6DC-448B-9122-7B98F65D9A63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D552F3E-B6DC-448B-9122-7B98F65D9A63}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7D552F3E-B6DC-448B-9122-7B98F65D9A63}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

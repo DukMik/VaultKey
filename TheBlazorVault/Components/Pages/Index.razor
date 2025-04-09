@@ -1,0 +1,10 @@
+﻿@page "/Index"
+
+<MudText Typo="Typo.h4" Color="Color.Primary">Bienvenue sur la page d'accueil !</MudText>
+<MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => compteur++)">
+    Compteur : @compteur
+</MudButton>
+
+@code {
+    private int compteur = 0;
+}

@@ -7,6 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Content Remove="Components\Pages\Error.razor" />
+      <Content Remove="Components\Pages\Index.razor" />
+      <Content Remove="Components\Pages\Weather.razor" />
+      <Content Remove="Components\Shared\LoginDisplay.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="MudBlazor" Version="8.5.1" />
     </ItemGroup>
 

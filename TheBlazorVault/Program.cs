@@ -63,6 +63,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddMudServices();
 
 //builder.Services.AddScoped<VaultService>();
 
@@ -78,6 +79,7 @@ if (!app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
 
 
 app.UseAntiforgery();
