@@ -8,6 +8,7 @@ namespace TheBlazorVault.Components.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            var toto = await authStateProvider.GetAuthenticationStateAsync();
             TheUser = await UserService.GetCurrentUserAsync();
         }
     }
