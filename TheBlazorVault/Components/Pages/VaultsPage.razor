@@ -1,0 +1,32 @@
+﻿@page "/vaults"
+@attribute [Authorize]
+@inject CallServices CallServices
+@inject AuthenticationStateProvider AuthStateProvider;
+@inject NavigationManager NavigationManager
+
+<PageTitle>Vaults</PageTitle>
+
+<h1>Liste de vos Vaults</h1>
+
+@if (_vaults == null)
+{
+    <p>Chargement en cours...</p>
+}
+else if (_vaults.Count == 0)
+{
+    <p>Aucun Vault trouvé.</p>
+}
+else
+{
+    <MudTable Items="_vaults">
+        <HeaderContent>
+            <MudTh>Nom du Vault</MudTh>
+            <MudTh>Date de création</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>VaultName</MudTd>
+            <MudTd>DateCreated.ToShortDateString()</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
