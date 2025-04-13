@@ -65,7 +65,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddMudServices();
 
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<CallServices>();
 
 var app = builder.Build();
 

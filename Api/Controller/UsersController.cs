@@ -78,53 +78,23 @@ namespace Api.Controller
 
             return Ok(user);
         }
-
-
-        ///// <summary>
-        ///// Récupère les informations de l'utilisateur actuellement connecté.
-        ///// </summary>
-        //[HttpGet("/user")]
-        //[Authorize]
-        //public async Task<ActionResult<UserDto>> GetCurrentUser()
-        //{
-        //    // Récupère le claim "oid" (object ID) de l'utilisateur connecté
-        //    var objectId = User.GetObjectId();
-
-        //    if (!Guid.TryParse(objectId, out Guid externalUserId))
-        //        return Unauthorized("Identifiant utilisateur invalide.");
-
-        //    // Utilise ton service pour récupérer ou créer l'utilisateur
-        //    var internalUserId = await UserService.GetOrCreateAppUserIdAsync(externalUserId);
-
-        //    // Crée un DTO de réponse
-        //    var result = new UserDto
-        //    {
-        //        IdUser = internalUserId,
-        //        EntraIdUser = externalUserId,
-        //        Vaults = null,
-        //        Logs = null
-        //    };
-
-        //    return Ok(result);
-        //}
-
+        
         /// <summary>
         /// Récupère la liste des coffres (vaults) d’un utilisateur spécifié par son identifiant.
         /// </summary>
         /// <param name="id">Identifiant de l’utilisateur dont on veut récupérer les coffres.</param>
         /// <returns>Une liste d’objets <see cref="VaultDTO"/> représentant les coffres actifs de l’utilisateur.</returns>
-        [HttpGet("{id}/vaults")]
-        public async Task<ActionResult<IEnumerable<VaultDto>>> GetVaultsByUser(int id)
+        [HttpGet("vaults")]
+        public async Task<ActionResult<IEnumerable<VaultDto>>> GetVaultsForCurrentUser()
         {
-            // Vérifie que l'identifiant est valide (strictement supérieur à zéro)
-            if (id <= 0)
-            {
-                return BadRequest("L'identifiant de l'utilisateur doit être spécifié et valide.");
-            }
+            var userId = _service.CurrentUserId;
 
+            if (userId == int.MinValue)
+                return Unauthorized();
+            
             // Recherche des coffres qui appartiennent à l'utilisateur et qui ne sont pas désactivés
             var vaults = await _context.Vault
-                .Where(v => v.UserId == id && !v.IsDesactivated)
+                .Where(v => v.UserId == userId && !v.IsDesactivated)
                 .Select(v => new VaultDto
                 {
                     IdVault = v.IdVault,

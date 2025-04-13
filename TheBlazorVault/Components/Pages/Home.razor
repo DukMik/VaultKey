@@ -1,9 +1,15 @@
 ﻿@page "/"
-@inject UserService UserService
-@inject AuthenticationStateProvider authStateProvider;
+@inject CallServices CallServices
+@inject AuthenticationStateProvider AuthStateProvider;
+@inject NavigationManager NavigationManager;
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 <MudText Typo="Typo.h4" Color="Color.Primary">Bienvenue sur la page d'accueil !</MudText>
 Welcome to your new app.
+
+<!-- Bouton redirigeant vers Vaults -->
+<MudButton Color="Color.Primary" OnClick='@( () => NavigationManager.NavigateTo("/vaults") )'>
+    Accéder aux Vaults
+</MudButton>
