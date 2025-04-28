@@ -9,6 +9,6 @@ public class EntrieDto
     public int UrlDataId { get; set; }
     public int CommentDataId { get; set; }
     public DateTime CreatedDate { get; set; }
-    public DateTime CpdatedDate { get; set; }
+    public DateTime UpdatedDate { get; set; }
     public bool IsDesactivated { get; set; }
 }

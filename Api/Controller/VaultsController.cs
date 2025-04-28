@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Api.Service;
 using TheApiDto;
@@ -9,7 +6,7 @@ using EntityFrameworkComm.EfModel.Context;
 using EntityFrameworkComm.EfModel.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Controllers
+namespace Api.Controller
 {
     [ApiController]
     [Route("api/[controller]")]
