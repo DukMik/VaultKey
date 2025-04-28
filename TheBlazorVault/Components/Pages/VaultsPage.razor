@@ -1,24 +1,26 @@
 ﻿@page "/vaults"
+@using System.Security.Cryptography
 @attribute [Authorize]
 @inject CallServices CallServices
 @inject AuthenticationStateProvider AuthStateProvider;
 @inject NavigationManager NavigationManager
 
+
 <PageTitle>Vaults</PageTitle>
 
 <h1>Liste de vos Vaults</h1>
 
-@if (_vaults == null)
+@if (Vaults == null)
 {
     <p>Chargement en cours...</p>
 }
-else if (_vaults.Count == 0)
+else if (Vaults.Count == 0)
 {
     <p>Aucun Vault trouvé.</p>
 }
 else
 {
-    <MudTable Items="_vaults">
+    <MudTable Items="Vaults">
         <HeaderContent>
             <MudTh>Nom du Vault</MudTh>
             <MudTh>Date de création</MudTh>
@@ -29,4 +31,10 @@ else
         </RowTemplate>
     </MudTable>
 }
+
+<h2>Créer un nouveau Vault</h2>
+<MudTextField @bind-Value="newVaultName" Label="Nom du nouveau Vault" Variant="Variant.Outlined" />
+<MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateVault" Disabled="@string.IsNullOrWhiteSpace(newVaultName)">
+    Créer
+</MudButton>
 

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using EntityFrameworkComm.EfModel.Context;
 using Api.Service;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Web;
+
 
 
 
@@ -55,9 +55,7 @@ namespace Api.Controller
         [HttpGet("user")]
         [Authorize] // S'assure que seul un utilisateur connecté peut accéder
         public async Task<ActionResult<UserDto>> GetCurrentUser()
-        {            
-
-           
+        {  
             // 2. Recherchez l'utilisateur dans la base de données
             var user = await _context.User
                 .Where(u => u.IdUser == _service.CurrentUserId)
@@ -82,19 +80,16 @@ namespace Api.Controller
         /// <summary>
         /// Récupère la liste des coffres (vaults) d’un utilisateur spécifié par son identifiant.
         /// </summary>
-        /// <param name="id">Identifiant de l’utilisateur dont on veut récupérer les coffres.</param>
-        /// <returns>Une liste d’objets <see cref="VaultDTO"/> représentant les coffres actifs de l’utilisateur.</returns>
-        [HttpGet("vaults")]
-        public async Task<ActionResult<IEnumerable<VaultDto>>> GetVaultsForCurrentUser()
+        [HttpGet("vaults/{id}")]
+        public async Task<ActionResult<IEnumerable<VaultDto>>> GetVaultsForCurrentUser(int id)
         {
             var userId = _service.CurrentUserId;
 
             if (userId == int.MinValue)
                 return Unauthorized();
             
-            // Recherche des coffres qui appartiennent à l'utilisateur et qui ne sont pas désactivés
             var vaults = await _context.Vault
-                .Where(v => v.UserId == userId && !v.IsDesactivated)
+                .Where(v => v.UserId == id && !v.IsDesactivated)
                 .Select(v => new VaultDto
                 {
                     IdVault = v.IdVault,

@@ -88,6 +88,7 @@ builder.Services.AddScoped<UserService>();
 
  app.UseAuthorization();
 
+ //app.UseMiddleware<LoggingContextMiddleware>();
  app.UseMiddleware<GetOrCreateAppUserIdMiddleware>();
 
  app.MapControllers().RequireAuthorization();

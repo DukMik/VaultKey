@@ -1,17 +1,11 @@
 ﻿namespace TheApiDto;
 
-public class VaultDto
+public class VaultDtoCreation
 {
-    public int IdVault { get; set; }
     public int UserId { get; set; }
     public string VaultName { get; set; } = string.Empty;
     public DateTime DateCreated { get; set; }
     public string KeyHash { get; set; } = string.Empty;
     public string Salt { get; set; } = string.Empty;
     public byte[] PrivateKey { get; set; } = Array.Empty<byte>();
-    public bool IsDesactivated { get; set; }
-    
-    public UserDto? User { get; set; }
-    public List<EntrieDto>? Entries { get; set; }
-    public List<LogDto>? Logs { get; set; }
 }

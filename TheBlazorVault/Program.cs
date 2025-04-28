@@ -1,39 +1,8 @@
-/*using MudBlazor.Services;
-using TheBlazorVault.Components;
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddMudServices();
-
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-
-
-app.UseAntiforgery();
-
-app.MapStaticAssets();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.Run();*/
-
 using TheBlazorVault.Components;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 using MudBlazor.Services;
 using TheBlazorVault.Service;
 
@@ -61,6 +30,13 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     })
     .AddInMemoryTokenCaches();
 
+
+builder.Services
+    .AddControllersWithViews()
+    .AddMicrosoftIdentityUI();
+
+
+
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddMudServices();
@@ -69,16 +45,16 @@ builder.Services.AddScoped<CallServices>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+// … vos checks d’environnement, HSTS, HTTPS …
 
+app.UseRouting();
 
-app.UseHttpsRedirection();
+// Active le pipeline d’authentification / autorisation
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Expose les controllers de MicrosoftIdentityUI (/MicrosoftIdentity/Account/…)
+app.MapControllers();
 
 app.UseAntiforgery();
 
@@ -87,3 +63,22 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+// // Configure the HTTP request pipeline.
+// if (!app.Environment.IsDevelopment())
+// {
+//     app.UseExceptionHandler("/Error", createScopeForErrors: true);
+//     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+//     app.UseHsts();
+// }
+// 
+// 
+// app.UseHttpsRedirection();
+// 
+// app.UseAntiforgery();
+// 
+// app.MapStaticAssets();
+// app.MapRazorComponents<App>()
+//     .AddInteractiveServerRenderMode();
+// 
+// app.Run();

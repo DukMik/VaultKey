@@ -29,7 +29,7 @@ public class Vault
     
     public required List<User> Users { get; set; }
     public required List<Entrie> Entries { get; set; }
-    public required List<Log> AuditLogs { get; set; }
+    public required List<Log> Logs { get; set; }
 }
 
 

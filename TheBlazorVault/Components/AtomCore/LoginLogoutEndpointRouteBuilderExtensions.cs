@@ -5,46 +5,34 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TheBlazorVault.Components.AtomCore
 {
-    /// <summary>
-    /// Fournit des méthodes d'extension pour configurer les routes d'authentification,
-    /// incluant les endpoints de connexion et de déconnexion.
-    /// </summary>
-    /// <remarks>
-    /// Ce composant est dédié à la configuration des endpoints relatifs à l'authentification en utilisant
-    /// à la fois l'authentification par cookies et le protocole OpenIdConnect.
-    /// La méthode <see cref="MapLoginAndLogout(IEndpointRouteBuilder)"/> configure notamment les points d'accès
-    /// pour la connexion (/login) et la déconnexion (/logout).
-    /// </remarks>
+    
     internal static class LoginLogoutEndpointRouteBuilderExtensions
     {
-        /// <summary>
-        /// Configure et mappe les endpoints pour la connexion et la déconnexion sur le routeur d'endpoints fourni.
-        /// </summary>
-        /// <param name="endpoints">
-        /// L'instance de <see cref="IEndpointRouteBuilder"/> utilisée pour définir les endpoints de l'application.
-        /// </param>
-        /// <returns>
-        /// Un objet <see cref="IEndpointConventionBuilder"/> permettant de chaîner des conventions supplémentaires.
-        /// </returns>
+        
         internal static IEndpointConventionBuilder MapLoginAndLogout(this IEndpointRouteBuilder endpoints)
         {
-            // Crée un groupe d'endpoints sans préfixe de route spécifique.
             var group = endpoints.MapGroup(string.Empty);
-
-            // Configure l'endpoint de connexion.
-            // Redirige l'utilisateur vers une action de défi (challenge) d'authentification avec les propriétés définies.
+            
             group.MapGet("/login", (string? returnUrl) => TypedResults.Challenge(GetAuthProperties(returnUrl)))
                 .AllowAnonymous();
 
-            // Configure l'endpoint de déconnexion.
-            // Effectue la déconnexion des schémas d'authentification Cookie et OpenIdConnect,
-            // afin d'éviter une reconnexion automatique de l'utilisateur si un schéma n'est pas correctement déconnecté.
-            group.MapPost("/logout", ([FromForm] string? returnUrl) => TypedResults.SignOut(
-                GetAuthProperties(returnUrl),
-                new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme }
-            ));
+       //     // Configure l'endpoint de déconnexion.
+       //     // Effectue la déconnexion des schémas d'authentification Cookie et OpenIdConnect,
+       //     // afin d'éviter une reconnexion automatique de l'utilisateur si un schéma n'est pas correctement déconnecté.
+       //     group.MapPost("/logout", ([FromForm] string? returnUrl) => TypedResults.SignOut(GetAuthProperties(returnUrl),
+       //         new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme }
+       //     ));
+
+           // return group;
+            
+            // Sign out with both the Cookie and OIDC authentication schemes. Users who have not signed out with the OIDC scheme will
+            // automatically get signed back in as the same user the next time they visit a page that requires authentication
+            // with no opportunity to choose another account.
+            group.MapPost("/logout", ([FromForm] string? returnUrl) => TypedResults.SignOut(GetAuthProperties(returnUrl),
+                [CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme]));
 
             return group;
+            
         }
 
         /// <summary>
@@ -71,3 +59,6 @@ namespace TheBlazorVault.Components.AtomCore
             };
     }
 }
+
+
+

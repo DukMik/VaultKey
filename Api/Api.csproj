@@ -25,4 +25,10 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Middleware\LoggingContextMiddleware.cs" />
+      <Compile Remove="Controller\DebugController.cs" />
+      <Compile Remove="Controller\VaultsController2.cs" />
+    </ItemGroup>
+
 </Project>

@@ -1,15 +1,33 @@
 ﻿@page "/"
-@inject CallServices CallServices
-@inject AuthenticationStateProvider AuthStateProvider;
-@inject NavigationManager NavigationManager;
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
-<MudText Typo="Typo.h4" Color="Color.Primary">Bienvenue sur la page d'accueil !</MudText>
-Welcome to your new app.
+<MudText Typo="Typo.h4" Color="Color.Primary">
+  Bienvenue sur la page d'accueil !
+</MudText>
 
-<!-- Bouton redirigeant vers Vaults -->
-<MudButton Color="Color.Primary" OnClick='@( () => NavigationManager.NavigateTo("/vaults") )'>
-    Accéder aux Vaults
+<!-- Bouton pour accéder aux Vaults -->
+<MudButton Color="Color.Primary" OnClick='() => NavigationManager.NavigateTo("/vaults")'>
+  Accéder aux Vaults
 </MudButton>
+
+<button @onclick="@(()=>NavigationManager.NavigateTo("MicrosoftIdentity/Account/SignOut?postLogoutRedirectUri=/"))" ></button>
+
+<!-- NOUVEAU : bouton de déconnexion -->
+<MudButton Color="Color.Secondary" @OnClick="Logout">
+  Se déconnecter
+</MudButton>
+
+@code {
+  private void Logout()
+  {
+    NavigationManager.NavigateTo(
+      "MicrosoftIdentity/Account/SignOut?postLogoutRedirectUri=/",
+      forceLoad: true // <-- obligatoire pour déclencher un "vrai" appel HTTP
+    );
+  }
+}
+
