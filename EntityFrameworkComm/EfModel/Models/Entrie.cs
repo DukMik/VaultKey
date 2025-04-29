@@ -33,7 +33,7 @@ public class Entrie
         #region navigation
         public required Vault Vault { get; set; }
         public required List<EncryptedData> EncryptedData { get; set;}
-        public required List<Log> AuditLogs { get; set; }
+        public required List<Log> Logs { get; set; }
         #endregion 
 
 

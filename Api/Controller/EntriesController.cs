@@ -28,6 +28,77 @@ namespace Api.Controllers
             _userService = userService;
         }
 
+        #if DEBUG
+        [AllowAnonymous]
+#endif
+        [HttpPost]
+        public async Task<IActionResult> CreateEntrie(int vaultId,[FromBody] EntrieDtoCreation entriedto)
+        {
+            // 1. Vérifier l'utilisateur connecté
+            var userId = _userService.CurrentUserId;
+            if (userId == 0)
+                return Unauthorized();
+
+            // 2. Vérifier que le vault appartient à l'utilisateur
+            var vault = await _dbContext.Vault
+                .Include(v => v.Users)
+                .FirstOrDefaultAsync(v => v.IdVault == vaultId);
+            if (vault == null || !vault.Users.Any(u => u.IdUser == userId))
+                return Unauthorized();
+
+            // 3. Créer l'entité Entrie (EF Core)
+            var entry = new Entrie
+            {
+                VaultId        = vaultId,
+                CreatedDate    = DateTime.UtcNow,
+                UpdatedDate   = DateTime.UtcNow,
+                IsDesactivated = entriedto.IsDesactivated,
+                Vault          = null!, // Ne pas recharger le vault, la FK suffit
+                Logs           = null!, // Ne pas recharger les logs, la FK suffit
+                EncryptedData  = null!
+            };
+            _dbContext.Set<Entrie>().Add(entry);
+            await _dbContext.SaveChangesAsync();
+
+            // 4. Créer les EncryptedData (EF Core)
+            var encryptedEntries = new List<EncryptedData>
+            {
+                new EncryptedData { EntrieId = entry.IdEntrie, Iv = entriedto.NameData.Iv, CryptedData = entriedto.NameData.CryptedData, Tag = entriedto.NameData.Tag, Entrie = null!, Logs = null!},
+                new EncryptedData { EntrieId = entry.IdEntrie, Iv = entriedto.UserNameData.Iv, CryptedData = entriedto.UserNameData.CryptedData, Tag = entriedto.UserNameData.Tag, Entrie = null!, Logs = null! },
+                new EncryptedData { EntrieId = entry.IdEntrie, Iv = entriedto.UrlData.Iv, CryptedData = entriedto.UrlData.CryptedData, Tag = entriedto.UrlData.Tag, Entrie = null!, Logs = null! },
+                new EncryptedData { EntrieId = entry.IdEntrie, Iv = entriedto.CommentData.Iv, CryptedData = entriedto.CommentData.CryptedData, Tag = entriedto.CommentData.Tag, Entrie = null!, Logs = null! },
+                new EncryptedData { EntrieId = entry.IdEntrie, Iv = entriedto.PasswordData.Iv, CryptedData = entriedto.PasswordData.CryptedData, Tag = entriedto.PasswordData.Tag, Entrie = null!, Logs = null! }
+            };
+            _dbContext.Set<EncryptedData>().AddRange(encryptedEntries);
+            await _dbContext.SaveChangesAsync();
+
+            // 5. Mettre à jour les clés étrangères dans Entrie
+            entry.NameDataId     = encryptedEntries[0].IdEncryptedData;
+            entry.UserNameDataId = encryptedEntries[1].IdEncryptedData;
+            entry.UrlDataId      = encryptedEntries[2].IdEncryptedData;
+            entry.CommentDataId  = encryptedEntries[3].IdEncryptedData;
+            entry.PasswordDataId = encryptedEntries[4].IdEncryptedData;
+            await _dbContext.SaveChangesAsync();
+
+            // 6. Créer un log de création d'entrée
+            var logEntry = new Log
+            {
+                ActionDate = DateTime.UtcNow,
+                ActionType = "EntryCreated",
+                Details    = $"Entrée {entry.IdEntrie} créée dans le vault {vaultId}.",
+                UserId     = userId,
+                VaultId    = vaultId,
+                EntryId    = entry.IdEntrie,
+                
+                User = null! // Ne pas recharger l'utilisateur, la FK suffit'
+            };
+            _dbContext.Log.Add(logEntry);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
+        }
+    
+        
 #if DEBUG
         [AllowAnonymous]
 #endif

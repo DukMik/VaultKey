@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Compile Remove="EncryptedDataDto.cs" />
+      <Compile Remove="EncryptedPasswordDto.cs" />
+    </ItemGroup>
+
 </Project>
