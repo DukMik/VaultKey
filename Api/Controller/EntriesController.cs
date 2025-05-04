@@ -32,8 +32,12 @@ namespace Api.Controllers
         [AllowAnonymous]
 #endif
         [HttpPost]
-        public async Task<IActionResult> CreateEntrie(int vaultId,[FromBody] EntrieDtoCreation entriedto)
+        public async Task<IActionResult> CreateEntrie(int vaultId,[FromBody] EntrieDtoCreation _)
         {
+            var entriedto = _;
+            var bytes = Convert.FromBase64String("MTIzNDU2Nzg5MDEyMzQ1Ng==");
+            Console.WriteLine(BitConverter.ToString(bytes));
+            
             // 1. Vérifier l'utilisateur connecté
             var userId = _userService.CurrentUserId;
             if (userId == 0)
