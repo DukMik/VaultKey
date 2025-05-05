@@ -1,15 +1,27 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Identity.Abstractions;
 using TheApiDto;
 
+
+
 namespace TheBlazorVault.Service
 {
+    /// <summary>
+    /// classe que rassemble tout les appels a l'API
+    /// </summary>
+    /// <remarks>l'appelle via la downstream API est plus dangeureux car il fait sortir les information pour les réutiliser, en Blazor serveur ce n'est pas nécéssaire.</remarks>
+    /// <param name="downstreamApi"></param>
     public class CallServices(IDownstreamApi downstreamApi)
     {
         
         private List<VaultDto> _vaultsDtos = [];
+        private readonly HttpClient http = new HttpClient();
+        
+        // récupérations des vault via la downstream api 
+        // plus gourmand que l'appelle normal de l'api (de toute façon le user est contoler au controler de l'api)'
         public async Task<List<VaultDto>> GetVaultsAsync(int UserId)
         {
             _vaultsDtos = await downstreamApi.CallApiForUserAsync<List<VaultDto>>("EntraIDAuthWebAPI", options =>
@@ -21,6 +33,48 @@ namespace TheBlazorVault.Service
             return _vaultsDtos ;
         }
 
+        // je veut crée un vault 
+        // apelle directe de l'api dans downsrtream api ce qui est moins gourmands et moins risquer
+        
+        // 1) Appel HTTP « brut » – plus léger, aucun jeton n’est ré‑émis côté client.
+        public async Task<HttpResponseMessage> CreateVaultAsyncRest(VaultDtoCreation vaultDtoCreation)
+            => await http.PostAsJsonAsync("api/vault", vaultDtoCreation);
+
+        // 2) Même chose mais via DownstreamApi – MSAL ajoute access‑token + gestion erreur AAD.
+        public async Task<HttpResponseMessage> CreateVaultAsyncDap1(VaultDtoCreation vaultDtoCreation)
+            => await downstreamApi.CallApiForUserAsync<HttpResponseMessage>(
+                "EntraIDAuthWebAPI",
+                opt =>
+                {
+                    opt.HttpMethod   = "POST";
+                    opt.RelativePath = "api/vault";
+                    opt.CustomizeHttpRequestMessage  = msg => msg.Content = new StringContent(JsonSerializer.Serialize(vaultDtoCreation), Encoding.UTF8, "application/json");
+                })?? throw new Exception("Erreur lors de l'appel de l'API");
+        
+        
+        public Task<HttpResponseMessage> CreateVaultAsyncDap(VaultDtoCreation dto)
+            => downstreamApi.CallApiForUserAsync(                    // ← SANS <T>
+                "EntraIDAuthWebAPI",
+                o =>
+                {
+                    o.HttpMethod   = "POST";
+                    o.RelativePath = "api/vault";
+                    o.CustomizeHttpRequestMessage = msg =>
+                    {
+                        msg.Content = JsonContent.Create(dto);
+                    };
+                });
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         // je veut crée une entrée
         public async Task GetVaultsAsync(int vaultId, EntrieDtoCreation entrieDtoCreation)
         {
