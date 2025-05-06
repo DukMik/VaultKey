@@ -78,13 +78,13 @@ public partial class VaultsPage
         var idClaim = user.FindFirst("IdUser")?.Value;
         
         // appler une route pour chopper le userID
-        if (!int.TryParse(idClaim, out var userId))
-        {
-            ErrorMessage = "Impossible de récupérer l'identifiant utilisateur.";
-            return;
-        }
+        // if (!int.TryParse(idClaim, out var userId))
+        // {
+        //     ErrorMessage = "Impossible de récupérer l'identifiant utilisateur.";
+        //     return;
+        // }
 
-        userId = 2;
+        var userId = 2; // a modifier par une route de récupération
         Vaults = await CallServices.GetVaultsAsync(userId);
     }
 

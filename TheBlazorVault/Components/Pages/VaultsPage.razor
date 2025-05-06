@@ -163,51 +163,99 @@
 
 <PageTitle>Vaults</PageTitle>
 
-<!-- tableau inchangé … -->
+<h3 class="mb-4">Liste de vos Vaults</h3>
+
+@if (Vaults is null)
+{
+    <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+}
+else if (Vaults.Count == 0)
+{
+    <MudAlert Severity="Severity.Info">Aucun vault trouvé.</MudAlert>
+}
+else
+{
+    <MudTable Items="Vaults" Hover="true" Elevation="1">
+        <HeaderContent>
+            <MudTh>Nom</MudTh>
+            <MudTh>Date de création</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Nom">@context.VaultName</MudTd>
+            <MudTd DataLabel="Date">@context.DateCreated.ToLocalTime().ToShortDateString()</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+<hr class="my-6" />
+
 
 <hr class="my-6" />
 
 <h4>Créer un nouveau vault</h4>
 
-@*  ─────────────────────────────────────────────────────────────
-    Si ton projet est en .NET 8 : dé‑commente FormName ci‑dessous
-   ───────────────────────────────────────────────────────────── *@
-<EditForm Model="NewVault"
-          OnValidSubmit="CreateVaultAsync"
-          FormName="createVault"               @* <- .NET 8 *@
-          @* AdditionalAttributes="@(new Dictionary<string, object>{{"formname","createVault"}})" *@>
+@* <EditForm Model="NewVault" *@
+@*           OnValidSubmit="CreateVaultAsync" *@
+@*           FormName="createVault"> *@
+@* *@
+@*     <DataAnnotationsValidator /> *@
+@* *@
+@*     <MudPaper Class="pa-4" Elevation="1"> *@
+@*         <MudTextField @bind-Value="NewVault.VaultName" Label="Nom du vault" Required="true" Immediate="true" /> *@
+@* *@
+@*         <MudTextField @bind-Value="NewVault.Salt"       Label="Salt" Required="true" *@
+@*                       Id="salt" Immediate="true" /> *@
+@* *@
+@*         <MudTextField @bind-Value="NewVault.KeyHash"    Label="Hash de la clé" Required="true" *@
+@*                       Id="keyHash" Immediate="true" /> *@
+@* *@
+@*         <MudTextField @bind-Value="NewVault.PrivateKey" Label="Clé privée (base64)" Lines="3" *@
+@*                       Required="true" Id="privateKey" Immediate="true" /> *@
+@* *@
+@*         <MudStack Row="true" Spacing="2" Class="mt-4"> *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Secondary" *@
+@*                        OnClick="@(() => JS.InvokeVoidAsync("vaultCrypto.generate"))"> *@
+@*                 Générer crypto (JS) *@
+@*             </MudButton> *@
+@* *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Primary" *@
+@*                        ButtonType="ButtonType.Submit"> *@
+@*                 Enregistrer *@
+@*             </MudButton> *@
+@*         </MudStack> *@
+@* *@
+@*         @if (!string.IsNullOrWhiteSpace(ErrorMessage)) *@
+@*         { *@
+@*             <MudAlert Severity="Severity.Error" Class="mt-3">@ErrorMessage</MudAlert> *@
+@*         } *@
+@*     </MudPaper> *@
+@* </EditForm> *@
 
+<EditForm Model="NewVault" OnValidSubmit="CreateVaultAsync" FormName="createVault">
     <DataAnnotationsValidator />
+    <ValidationSummary />
 
     <MudPaper Class="pa-4" Elevation="1">
         <MudTextField @bind-Value="NewVault.VaultName" Label="Nom du vault" Required="true" Immediate="true" />
-
-        <MudTextField @bind-Value="NewVault.Salt"       Label="Salt" Required="true"
-                      Id="salt" Immediate="true" />
-
-        <MudTextField @bind-Value="NewVault.KeyHash"    Label="Hash de la clé" Required="true"
-                      Id="keyHash" Immediate="true" />
-
-        <MudTextField @bind-Value="NewVault.PrivateKey" Label="Clé privée (base64)" Lines="3"
-                      Required="true" Id="privateKey" Immediate="true" />
+        <MudTextField @bind-Value="NewVault.Salt" Label="Salt" Required="true" Id="salt" Immediate="true" />
+        <MudTextField @bind-Value="NewVault.KeyHash" Label="Hash de la clé" Required="true" Id="keyHash" Immediate="true" />
+        <MudTextField @bind-Value="NewVault.PrivateKey" Label="Clé privée (base64)" Lines="3" Required="true" Id="privateKey" Immediate="true" />
 
         <MudStack Row="true" Spacing="2" Class="mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary"
-                       OnClick="@(() => JS.InvokeVoidAsync("vaultCrypto.generate"))">
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => JS.InvokeVoidAsync("vaultCrypto.generate"))">
                 Générer crypto (JS)
             </MudButton>
 
-            <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                       ButtonType="ButtonType.Submit">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">
                 Enregistrer
             </MudButton>
         </MudStack>
-
-        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
-        {
-            <MudAlert Severity="Severity.Error" Class="mt-3">@ErrorMessage</MudAlert>
-        }
     </MudPaper>
+
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Class="mt-3">@ErrorMessage</MudAlert>
+    }
 </EditForm>
 
 @* ----------  Script JS (inchangé) ---------- *@
