@@ -7,10 +7,18 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Components\Dialogs\PasswordDialog.razor.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Content Remove="Components\Pages\Error.razor" />
       <Content Remove="Components\Pages\Index.razor" />
       <Content Remove="Components\Pages\Weather.razor" />
       <Content Remove="Components\Shared\LoginDisplay.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Components\Dialogs\PasswordDialog.razor.cs" />
     </ItemGroup>
 
     <ItemGroup>
