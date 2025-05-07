@@ -1,0 +1,19 @@
+﻿@page "/EntriePage"
+@using TheBlazorVault.Components.Pages.Modules
+@rendermode InteractiveServer
+@inject AddVaultForm AddVaultForm
+<h3>EntriePage</h3>
+
+<input type="checkbox" @bind="_newentrie.IsDesactivated"/>
+<button @onclick="Callback"> test</button>
+
+<AddVaultForm> </AddVaultForm>
+
+@code {
+
+    private void Callback()
+    {
+       Console.WriteLine(_newentrie.NameData);
+    }
+
+}

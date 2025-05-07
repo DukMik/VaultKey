@@ -1,0 +1,321 @@
+﻿@* @page "/vaults" *@
+@* @using System.Security.Cryptography *@
+@* @attribute [Authorize] *@
+@* @inject CallServices CallServices *@
+@* @inject AuthenticationStateProvider AuthStateProvider; *@
+@* @inject NavigationManager NavigationManager *@
+@* *@
+@* *@
+@* <PageTitle>Vaults</PageTitle> *@
+@* *@
+@* <h1>Liste de vos Vaults</h1> *@
+@* *@
+@* @if (Vaults == null) *@
+@* { *@
+@*     <p>Chargement en cours...</p> *@
+@* } *@
+@* else if (Vaults.Count == 0) *@
+@* { *@
+@*     <p>Aucun Vault trouvé.</p> *@
+@* } *@
+@* else *@
+@* { *@
+@*     <MudTable Items="Vaults"> *@
+@*         <HeaderContent> *@
+@*             <MudTh>Nom du Vault</MudTh> *@
+@*             <MudTh>Date de création</MudTh> *@
+@*         </HeaderContent> *@
+@*         <RowTemplate> *@
+@*             <MudTd>VaultName</MudTd> *@
+@*             <MudTd>DateCreated.ToShortDateString()</MudTd> *@
+@*         </RowTemplate> *@
+@*     </MudTable> *@
+@* } *@
+@* *@
+@* <h2>Créer un nouveau Vault</h2> *@
+@* *@
+@* <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateVault" Disabled="@string.IsNullOrWhiteSpace(newVaultName)"> *@
+@*     Créer *@
+@* </MudButton> *@
+@* *@
+
+@* @page "/vaults" *@
+@* @attribute [Authorize] *@
+@* *@
+@* @using MudBlazor *@
+@* @using TheApiDto *@
+@* *@
+@* @inject CallServices                 CallServices *@
+@* @inject AuthenticationStateProvider  AuthStateProvider *@
+@* @inject NavigationManager            Nav *@
+@* @inject IJSRuntime                   JS *@
+@* *@
+@* <PageTitle>Vaults</PageTitle> *@
+@* *@
+@* <h3 class="mb-4">Liste de vos Vaults</h3> *@
+@* *@
+@* @if (Vaults is null) *@
+@* { *@
+@*     <MudProgressCircular Indeterminate="true" Color="Color.Primary" /> *@
+@* } *@
+@* else if (Vaults.Count == 0) *@
+@* { *@
+@*     <MudAlert Severity="Severity.Info">Aucun vault trouvé.</MudAlert> *@
+@* } *@
+@* else *@
+@* { *@
+@*     <MudTable Items="Vaults" Hover="true" Elevation="1"> *@
+@*         <HeaderContent> *@
+@*             <MudTh>Nom</MudTh> *@
+@*             <MudTh>Date de création</MudTh> *@
+@*         </HeaderContent> *@
+@*         <RowTemplate> *@
+@*             <MudTd DataLabel="Nom">@context.VaultName</MudTd> *@
+@*             <MudTd DataLabel="Date">@context.DateCreated.ToLocalTime().ToShortDateString()</MudTd> *@
+@*         </RowTemplate> *@
+@*     </MudTable> *@
+@* } *@
+@* *@
+@* <hr class="my-6" /> *@
+@* *@
+@* <h4>Créer un nouveau vault</h4> *@
+@* *@
+@* <EditForm Model="NewVault" OnValidSubmit="CreateVaultAsync"> *@
+@*     <DataAnnotationsValidator /> *@
+@* *@
+@*     <MudPaper Class="pa-4" Elevation="1"> *@
+@* *@
+@*         <MudTextField @bind-Value="NewVault.VaultName" *@
+@*                       Label="Nom du vault" Required="true" Immediate="true" /> *@
+@* *@
+@*         <MudTextField @bind-Value="NewVault.Salt" *@
+@*                       Label="Salt" Required="true" Id="salt" Immediate="true" /> *@
+@* *@
+@*         <MudTextField @bind-Value="NewVault.KeyHash" *@
+@*                       Label="Hash de la clé" Required="true" Id="keyHash" Immediate="true" /> *@
+@* *@
+@*         <MudTextField @bind-Value="NewVault.PrivateKey" *@
+@*                       Label="Clé privée (base64)" Lines="3" *@
+@*                       Required="true" Id="privateKey" Immediate="true" /> *@
+@* *@
+@*         <MudStack Row="true" Spacing="2" Class="mt-4"> *@
+@* *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Secondary" *@
+@*                        OnClick="@(() => JS.InvokeVoidAsync("vaultCrypto.generate"))"> *@
+@*                 Générer crypto (JS) *@
+@*             </MudButton> *@
+@* *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Primary" *@
+@*                        ButtonType="ButtonType.Submit"> *@
+@*                 Enregistrer *@
+@*             </MudButton> *@
+@*         </MudStack> *@
+@* *@
+@*         @if (!string.IsNullOrWhiteSpace(ErrorMessage)) *@
+@*         { *@
+@*             <MudAlert Severity="Severity.Error" Class="mt-3">@ErrorMessage</MudAlert> *@
+@*         } *@
+@*     </MudPaper> *@
+@* </EditForm> *@
+@* *@
+@* $1$ ----------  Script côté client  ---------- #1# *@
+@* <script> *@
+@* /* Helpers hex <-> buffer */ *@
+@* const byteToHex = b => ('0' + b.toString(16)).slice(-2); *@
+@* const toHex     = bytes => [...bytes].map(byteToHex).join(''); *@
+@* *@
+@* window.vaultCrypto = { *@
+@*   generate: async () => { *@
+@*     /* 1.  Salt 128 bits */ *@
+@*     const saltBytes = crypto.getRandomValues(new Uint8Array(16)); *@
+@*     document.getElementById('salt').value = toHex(saltBytes); *@
+@* *@
+@*     /* 2.  Hash SHA‑256 du salt */ *@
+@*     const hashBuf = await crypto.subtle.digest('SHA-256', saltBytes); *@
+@*     document.getElementById('keyHash').value = toHex(new Uint8Array(hashBuf)); *@
+@* *@
+@*     /* 3.  Clé privée RSA‑OAEP 2048 exportée en base64 */ *@
+@*     const { privateKey } = await crypto.subtle.generateKey( *@
+@*         { name:'RSA-OAEP', modulusLength:2048, *@
+@*           publicExponent:new Uint8Array([1,0,1]), hash:'SHA-256' }, *@
+@*         true, *@
+@*         ['decrypt'] *@
+@*     ); *@
+@*     const pkcs8 = await crypto.subtle.exportKey('pkcs8', privateKey); *@
+@*     const base64 = btoa(String.fromCharCode(...new Uint8Array(pkcs8))); *@
+@*     document.getElementById('privateKey').value = base64; *@
+@*   } *@
+@* }; *@
+@* </script> *@
+
+
+
+@page "/vaults1"
+@attribute [Authorize]
+
+@using MudBlazor
+@using TheBlazorVault.Components.Pages.Modules
+@using TheApiDto
+
+@inject CallServices                 CallServices
+@inject AuthenticationStateProvider  AuthStateProvider
+@inject NavigationManager            Nav
+@inject IJSRuntime                   JS
+@inject  AddVaultForm  AddVaultForm
+<AddVaultForm CreateVaultCallback="CreateVaultAsync"></AddVaultForm>
+<PageTitle>Vaults</PageTitle>
+
+<h3 class="mb-4">Liste de vos Vaults</h3>
+
+@if (Vaults is null)
+{
+    <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+}
+else if (Vaults.Count == 0)
+{
+    <MudAlert Severity="Severity.Info">Aucun vault trouvé.</MudAlert>
+}
+else
+{
+    <MudTable Items="Vaults" Hover="true" Elevation="1">
+        <HeaderContent>
+            <MudTh>Nom</MudTh>
+            <MudTh>Date de création</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Nom">@context.VaultName</MudTd>
+            <MudTd DataLabel="Date">@context.DateCreated.ToLocalTime().ToShortDateString()</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+<hr class="my-6" />
+
+
+<hr class="my-6" />
+
+<h4>Créer un nouveau vault</h4>
+
+@* <EditForm Model="NewVault" *@
+@*           OnValidSubmit="CreateVaultAsync" *@
+@*           FormName="createVault"> *@
+@* *@
+@*     <DataAnnotationsValidator /> *@
+@* *@
+@*     <MudPaper Class="pa-4" Elevation="1"> *@
+@*         <MudTextField @bind-Value="NewVault.VaultName" Label="Nom du vault" Required="true" Immediate="true" /> *@
+@* *@
+@*         <MudTextField @bind-Value="NewVault.Salt"       Label="Salt" Required="true" *@
+@*                       Id="salt" Immediate="true" /> *@
+@* *@
+@*         <MudTextField @bind-Value="NewVault.KeyHash"    Label="Hash de la clé" Required="true" *@
+@*                       Id="keyHash" Immediate="true" /> *@
+@* *@
+@*         <MudTextField @bind-Value="NewVault.PrivateKey" Label="Clé privée (base64)" Lines="3" *@
+@*                       Required="true" Id="privateKey" Immediate="true" /> *@
+@* *@
+@*         <MudStack Row="true" Spacing="2" Class="mt-4"> *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Secondary" *@
+@*                        OnClick="@(() => JS.InvokeVoidAsync("vaultCrypto.generate"))"> *@
+@*                 Générer crypto (JS) *@
+@*             </MudButton> *@
+@* *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Primary" *@
+@*                        ButtonType="ButtonType.Submit"> *@
+@*                 Enregistrer *@
+@*             </MudButton> *@
+@*         </MudStack> *@
+@* *@
+@*         @if (!string.IsNullOrWhiteSpace(ErrorMessage)) *@
+@*         { *@
+@*             <MudAlert Severity="Severity.Error" Class="mt-3">@ErrorMessage</MudAlert> *@
+@*         } *@
+@*     </MudPaper> *@
+@* </EditForm> *@
+
+@* <EditForm Model="NewVault" OnValidSubmit="CreateVaultAsync" FormName="createVault"> *@
+@*     <DataAnnotationsValidator /> *@
+@*     <ValidationSummary /> *@
+@* *@
+@*     <MudPaper Class="pa-4" Elevation="1"> *@
+@*         <MudTextField T="string" @bind-Value="NewVault.VaultName" Label="Nom du vault" Required="true" Immediate="true" /> *@
+@*         <MudTextField T="string" @bind-Value="NewVault.Salt" Label="Salt" Required="true" Id="salt" Immediate="true" /> *@
+@*         <MudTextField T="string" @bind-Value="NewVault.KeyHash" Label="Hash de la clé" Required="true" Id="keyHash" Immediate="true" /> *@
+@*         <MudTextField T="byte[]" @bind-Value="NewVault.PrivateKey" Label="Clé privée (base64)" Lines="3" Required="true" Id="privateKey" Immediate="true" /> *@
+@* *@
+@* *@
+@*         <MudStack Row="true" Spacing="2" Class="mt-4"> *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => JS.InvokeVoidAsync("vaultCrypto.generate"))"> *@
+@*                 Générer crypto (JS) *@
+@*             </MudButton> *@
+@* *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit"> *@
+@*                 Enregistrer *@
+@*             </MudButton> *@
+@*         </MudStack> *@
+@*     </MudPaper> *@
+@* *@
+@*     @if (!string.IsNullOrWhiteSpace(ErrorMessage)) *@
+@*     { *@
+@*         <MudAlert Severity="Severity.Error" Class="mt-3">@ErrorMessage</MudAlert> *@
+@*     } *@
+@* </EditForm> *@
+
+@* <EditForm Model="NewVault" OnValidSubmit="CreateVaultAsync" name="createVault"> *@
+@*     <DataAnnotationsValidator /> *@
+@*     <ValidationSummary /> *@
+@* *@
+@*     <div class="form-group"> *@
+@*         <label for="vaultName">Nom du vault</label> *@
+@*         <Input type="text" id="vaultName" class="form-control" @bind="test" /> *@
+@*     </div> *@
+@* *@
+@*     <div class="form-group"> *@
+@*         <label for="salt">Salt</label> *@
+@*         <Input type="text" id="salt" class="form-control" @bind="NewVault.Salt" /> *@
+@*     </div> *@
+@* *@
+@*     <div class="form-group"> *@
+@*         <label for="keyHash">Hash de la clé</label> *@
+@*         <InputText id="keyHash" class="form-control" @bind-Value="NewVault.KeyHash" /> *@
+@*     </div> *@
+@*      *@
+@*     *@
+@* *@
+@*     $1$ <div class="form-group"> #1# *@
+@*     $1$     <label for="privateKey">Clé privée (base64)</label> #1# *@
+@*     $1$     <InputTextArea id="privateKey" class="form-control" @bind-Value="PrivateKeyBase64" rows="3" /> #1# *@
+@*     $1$ </div> #1# *@
+@* *@
+@*     <button type="submit" class="btn btn-primary mt-3">Enregistrer</button> *@
+@* *@
+@*     @if (!string.IsNullOrWhiteSpace(ErrorMessage)) *@
+@*     { *@
+@*         <div class="alert alert-danger mt-3">@ErrorMessage</div> *@
+@*     } *@
+@* </EditForm> *@
+
+
+
+@* ----------  Script JS (inchangé) ---------- *@
+<script>
+const toHex = bytes => [...bytes].map(b => ('0'+b.toString(16)).slice(-2)).join('');
+
+window.vaultCrypto = {
+  generate: async () => {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    document.getElementById('salt').value = toHex(salt);
+
+    const hashBuf = await crypto.subtle.digest('SHA-256', salt);
+    document.getElementById('keyHash').value = toHex(new Uint8Array(hashBuf));
+
+    const { privateKey } = await crypto.subtle.generateKey(
+        { name:'RSA-OAEP', modulusLength:2048,
+          publicExponent:new Uint8Array([1,0,1]), hash:'SHA-256' },
+        true, ['decrypt']);
+    const pkcs8 = await crypto.subtle.exportKey('pkcs8', privateKey);
+    document.getElementById('privateKey').value =
+        btoa(String.fromCharCode(...new Uint8Array(pkcs8)));
+  }
+};
+</script>
