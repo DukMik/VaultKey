@@ -1,42 +1,54 @@
 ﻿@page "/vaults"
 @attribute [Authorize]
+@rendermode InteractiveServer
 
 @using MudBlazor
 @using TheApiDto
+@using TheBlazorVault.Components.Pages.Modules
 
-@inject CallServices                 CallServices
-@inject AuthenticationStateProvider  AuthStateProvider
-@inject NavigationManager            Nav
-@inject IJSRuntime                   JS
-@inject IDialogService               DialogService
+
 
 
 <PageTitle>Vaults</PageTitle>
 
 <h3 class="mb-4">Liste de vos Vaults</h3>
 
-@if (Vaults is null)
+@if (Vaults == null)
 {
-    <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+    <div class="d-flex justify-content-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+        </div>
+    </div>
 }
 else if (Vaults.Count == 0)
 {
-    <MudAlert Severity="Severity.Info">Aucun vault trouvé.</MudAlert>
+    <div class="alert alert-info text-center my-5" role="alert">
+        Aucun vault trouvé.
+    </div>
 }
 else
 {
-    <MudTable Items="Vaults" Hover="true" Elevation="1"
-              RowClick="PromptPasswordAsync">
-        <HeaderContent>
-            <MudTh>Nom</MudTh>
-            <MudTh>Date de création</MudTh>
-        </HeaderContent>
-
-        <RowTemplate>
-            <MudTd DataLabel="Nom">VaultName</MudTd>
-            <MudTd DataLabel="Date">DateCreated.ToLocalTime().ToShortDateString()</MudTd>
-        </RowTemplate>
-    </MudTable>
+    <table class="table table-hover shadow-sm">
+        <thead class="table-light">
+        <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Date de création</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var vault in Vaults)
+        {
+            <tr>
+                <td>@vault.VaultName</td>
+                <td>@vault.DateCreated.ToLocalTime().ToShortDateString()</td>
+                <td> <input type="password" @bind="vault.KeyHash"> password </td>
+                <td> <button class="btn-primary" @onclick="EnterVault"> le bouton de connexion</button></td>
+                <td> <button class="alert-danger" @onclick="DesactivateVault">le bouton de desactivation</button></td>
+            </tr>
+        }
+        </tbody>
+    </table>
 }
 
 <hr class="my-6" />
@@ -46,32 +58,7 @@ else
 
 <h4>Créer un nouveau vault</h4>
 
-<EditForm Model="NewVault" OnValidSubmit="CreateVaultAsync" FormName="createVault">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <MudPaper Class="pa-4" Elevation="1">
-        <MudTextField @bind-Value="NewVault.VaultName" Label="Nom du vault" Required="true" Immediate="true" />
-        <MudTextField @bind-Value="NewVault.Salt" Label="Salt" Required="true" Id="salt" Immediate="true" />
-        <MudTextField @bind-Value="NewVault.KeyHash" Label="Hash de la clé" Required="true" Id="keyHash" Immediate="true" />
-        <MudTextField @bind-Value="NewVault.PrivateKey" Label="Clé privée (base64)" Lines="3" Required="true" Id="privateKey" Immediate="true" />
-
-        <MudStack Row="true" Spacing="2" Class="mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => JS.InvokeVoidAsync("vaultCrypto.generate"))">
-                Générer crypto (JS)
-            </MudButton>
-
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">
-                Enregistrer
-            </MudButton>
-        </MudStack>
-    </MudPaper>
-
-    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
-    {
-        <MudAlert Severity="Severity.Error" Class="mt-3">@ErrorMessage</MudAlert>
-    }
-</EditForm>
+<AddVaultForm></AddVaultForm>
 
 @* ----------  Script JS (inchangé) ---------- *@
 <script>
