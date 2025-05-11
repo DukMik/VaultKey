@@ -119,7 +119,7 @@ public partial class VaultsPage2 : ComponentBase
 
         // Choisir l'une des deux implémentations
         // var resp = await CallServices.CreateVaultAsyncRest(NewVault);
-        var resp = await CallServices.CreateVaultAsyncDap(vault);
+        var resp = await CallServices.CreateVaultAsync(vault);
 
         if (resp.IsSuccessStatusCode)
         {

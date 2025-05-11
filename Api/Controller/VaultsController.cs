@@ -129,6 +129,7 @@ namespace Api.Controller
         /// <summary>
         /// Active ou désactive un vault.
         /// </summary>
+        /// <remarks> Pourrait etre fait autrement </remarks>
         [AllowAnonymous]
         [HttpPatch("{id}/activation")]
         public async Task<IActionResult> ToggleVaultActivation(int id, [FromBody] VaultDtoActivation activationDto)

@@ -12,7 +12,7 @@ public partial class AddVaultForm : ComponentBase
     
     
     
-    public Task createmethodcallback()
+    public Task CreateMethodCallback()
     {
         Console.WriteLine(_newvault + " -- " + DateTime.Now.ToString());
         

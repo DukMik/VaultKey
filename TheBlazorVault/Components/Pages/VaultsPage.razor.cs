@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 using MudBlazor;
 using TheApiDto;
 using TheBlazorVault.Service;
+using TheBlazorVault.Components.Pages.Modules;
 
 namespace TheBlazorVault.Components.Pages;
 
@@ -16,18 +17,17 @@ public partial class VaultsPage
     [Inject]
     private AuthenticationStateProvider  AuthStateProvider{ get; set; }
     [Inject]
-    private NavigationManager            Nav{ get; set; }
+    private NavigationManager            Navigation { get; set; }
     [Inject]
     private IJSRuntime                   JS{ get; set; }
     
     #endregion
-    
-    
-    
-    
    
-    private List<VaultDto>?   Vaults;
-   
+    private List<VaultDto>?   _vaults;
+    private string?           _errorMessage;
+
+    private VaultDtoCreation  _newVault;
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         try
@@ -39,7 +39,7 @@ public partial class VaultsPage
 
                 if (!user.Identity?.IsAuthenticated ?? true)
                 {
-                    Nav.NavigateTo("authentication/login");
+                    Navigation.NavigateTo("authentication/login");
                     return;
                 }
 
@@ -54,7 +54,7 @@ public partial class VaultsPage
                 // }
 
                 var userId = 2; // a modifier par une route de récupération
-                Vaults = await CallServices.GetVaultsAsync(userId);
+                _vaults = await CallServices.GetVaultsAsync(userId);
                 StateHasChanged();
             }
         }
@@ -64,14 +64,81 @@ public partial class VaultsPage
             throw;
         }
     }
-    private void EnterVault()
+    
+    /* ------------  création d'un vault  ------------ */
+    private async Task CreateVaultAsync(VaultDtoCreation vault)
     {
-        throw new NotImplementedException();
+        try
+        {
+            _newVault = vault;
+            _errorMessage = null;
+            // NewVault.UserId = _userId;
+            _newVault.DateCreated = DateTime.UtcNow;
+
+            // les deux implémentations devrais fonctionner mais celui décommenter fonctionne pour sur  
+            // var resp = await CallServices.CreateVaultAsyncRest(NewVault);
+            var resp = await CallServices.CreateVaultAsync(vault);
+
+            if (resp.IsSuccessStatusCode)
+            {
+                _newVault = new VaultDtoCreation();
+                await OnInitializedAsync();
+            }
+            else
+            {
+                _errorMessage = $"Erreur {resp.StatusCode} : " + await resp.Content.ReadAsStringAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    
+    /* ------------  entrer dans un vault  ------------ */
+    private void EnterVault(VaultDto clickedVault)
+    {
+        Navigation.NavigateTo("/entries");
     }
 
-    private void DesactivateVault()
+    
+    
+    
+    
+    
+    /* ------------  desactiver un vault  ------------ */
+    private async Task DesactivateVault(VaultDto clickedVault)
     {
-        throw new NotImplementedException();
+        try
+        {
+            VaultDtoActivation vaultDtoActivation = new VaultDtoActivation();
+            if (clickedVault.IsDesactivated)
+            {
+                vaultDtoActivation.IsDesactivated = false;
+            }
+            else if (!clickedVault.IsDesactivated)
+            {
+                vaultDtoActivation.IsDesactivated = true;
+            }
+        
+            var resp = await CallServices.DesactivateVaultAsync(clickedVault.IdVault, vaultDtoActivation);
+
+            if (resp.IsSuccessStatusCode)
+            {
+                _newVault = new VaultDtoCreation();
+                await OnInitializedAsync();
+            }
+            else
+            {
+                _errorMessage = $"Erreur {resp.StatusCode} : " + await resp.Content.ReadAsStringAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     
