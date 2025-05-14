@@ -1,0 +1,77 @@
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using TheApiDto;
+using TheBlazorVault.Service;
+
+namespace TheBlazorVault.Components.Pages;
+
+public partial class EntriePage : ComponentBase
+{
+    [Inject] private CallServices CallServices { get; set; } = default!;
+    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    [Parameter] public int VaultId { get; set; }
+
+    private List<EntrieDto>? _entries;
+    private EntrieDtoCreation _newEntrie = new();
+    private string? _errorMessage;
+    private bool _isLoading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+        var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = auth.User;
+        var idClaim = user.FindFirst("IdUser")?.Value;
+        if (!int.TryParse(idClaim, out var userId))
+        {
+            Navigation.NavigateTo("/authentication/login");
+            return;
+        }
+
+        // Vérifie que le vault appartient à l'utilisateur
+        var vaults = await CallServices.GetVaultsAsync(userId);
+        var vault = vaults.FirstOrDefault(v => v.IdVault == VaultId);
+        if (vault == null)
+        {
+            Navigation.NavigateTo("/unauthorized");
+            return;
+        }
+
+        // Charge les entrées du vault
+        _entries = vault.Entries ?? new List<EntrieDto>();
+        _isLoading = false;
+    }
+
+    private async Task CreateEntrieAsync()
+    {
+        _errorMessage = null;
+        try
+        {
+            // Validation simple (à adapter selon besoins)
+            if (_newEntrie.NameData == null || _newEntrie.UserNameData == null)
+            {
+                _errorMessage = "Tous les champs obligatoires doivent être remplis.";
+                return;
+            }
+
+            // Appel API pour créer l'entrée
+            await CallServices.GetVaultsAsync(VaultId, _newEntrie);
+
+            // Recharge les entrées
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = auth.User;
+            var idClaim = user.FindFirst("IdUser")?.Value;
+            var userId = int.Parse(idClaim!);
+            var vaults = await CallServices.GetVaultsAsync(userId);
+            var vault = vaults.FirstOrDefault(v => v.IdVault == VaultId);
+            _entries = vault?.Entries ?? new List<EntrieDto>();
+            _newEntrie = new EntrieDtoCreation();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+    }
+}

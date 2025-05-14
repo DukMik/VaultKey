@@ -1,0 +1,77 @@
+﻿@page "/vaults"
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+<PageTitle>Vaults</PageTitle>
+
+<h3 class="mb-4">Liste de vos Vaults</h3>
+
+@if (_vaults == null)
+{
+    <div class="d-flex justify-content-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+        </div>
+    </div>
+}
+else if (_vaults.Count == 0)
+{
+    <div class="alert alert-info text-center my-5" role="alert">
+        Aucun vault trouvé.
+    </div>
+}
+else
+{
+    <table class="table table-hover shadow-sm">
+        <thead class="table-light">
+        <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Date de création</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var vault in _vaults)
+        {
+            <tr>
+                <td>@vault.VaultName</td>
+                <td>@vault.DateCreated.ToLocalTime().ToShortDateString()</td>
+                <td> <input type="password" @bind="vault.KeyHash"> password </td>
+                <td> <button class="btn-primary" @onclick="() => EnterVault(vault)"> le bouton de connexion</button></td>
+                <td> <button class="alert-danger" @onclick="() => DesactivateVault(vault)">le bouton de desactivation</button></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<hr class="my-6" />
+
+
+<hr class="my-6" />
+
+<h4>Créer un nouveau vault</h4>
+
+<AddVaultForm CreateVaultCallback="CreateVaultAsync"></AddVaultForm>
+
+@* $1$ ----------  Script JS (inchangé) ---------- #1# *@
+@* <script> *@
+@* const toHex = bytes => [...bytes].map(b => ('0'+b.toString(16)).slice(-2)).join(''); *@
+@* *@
+@* window.vaultCrypto = { *@
+@*   generate: async () => { *@
+@*     const salt = crypto.getRandomValues(new Uint8Array(16)); *@
+@*     document.getElementById('salt').value = toHex(salt); *@
+@* *@
+@*     const hashBuf = await crypto.subtle.digest('SHA-256', salt); *@
+@*     document.getElementById('keyHash').value = toHex(new Uint8Array(hashBuf)); *@
+@* *@
+@*     const { privateKey } = await crypto.subtle.generateKey( *@
+@*         { name:'RSA-OAEP', modulusLength:2048, *@
+@*           publicExponent:new Uint8Array([1,0,1]), hash:'SHA-256' }, *@
+@*         true, ['decrypt']); *@
+@*     const pkcs8 = await crypto.subtle.exportKey('pkcs8', privateKey); *@
+@*     document.getElementById('privateKey').value = *@
+@*         btoa(String.fromCharCode(...new Uint8Array(pkcs8))); *@
+@*   } *@
+@* }; *@
+@* </script> *@

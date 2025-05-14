@@ -43,15 +43,18 @@ public partial class VaultsPage
                     return;
                 }
 
-                // Récupère l'IdUser depuis l'API (base de données)
-                var userId = await CallServices.GetCurrentUserIdAsync();
-                if (userId == null)
-                {
-                    _errorMessage = "Impossible de récupérer l'identifiant utilisateur.";
-                    return;
-                }
+                // Id user exposé par l'API dans un claim "IdUser"
+                var idClaim = user.FindFirst("IdUser")?.Value;
+        
+                // appler une route pour chopper le userID
+                // if (!int.TryParse(idClaim, out var userId))
+                // {
+                //     ErrorMessage = "Impossible de récupérer l'identifiant utilisateur.";
+                //     return;
+                // }
 
-                _vaults = await CallServices.GetVaultsAsync(userId.Value);
+                var userId = 2; // a modifier par une route de récupération
+                _vaults = await CallServices.GetVaultsAsync(userId);
                 StateHasChanged();
             }
         }
@@ -96,10 +99,14 @@ public partial class VaultsPage
     /* ------------  entrer dans un vault  ------------ */
     private void EnterVault(VaultDto clickedVault)
     {
-        // Récupère l'IdUser depuis l'API (base de données)
-        var userId = CallServices.GetCurrentUserIdAsync().Result;
-        if (userId == null || userId.Value != clickedVault.UserId)
+        // Vérifie que l'utilisateur connecté est bien celui du vault
+        var auth = AuthStateProvider.GetAuthenticationStateAsync().Result;
+        var user = auth.User;
+        var idClaim = user.FindFirst("IdUser")?.Value;
+        idClaim = "2"; // a modifier 
+        if (!int.TryParse(idClaim, out var userId) || userId != clickedVault.UserId)
         {
+            // Redirige ou affiche une erreur si l'utilisateur n'est pas autorisé
             Navigation.NavigateTo("/unauthorized");
             return;
         }

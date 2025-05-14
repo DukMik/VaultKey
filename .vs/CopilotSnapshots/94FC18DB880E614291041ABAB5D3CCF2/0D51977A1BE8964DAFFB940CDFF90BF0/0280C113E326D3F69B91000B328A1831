@@ -72,26 +72,23 @@ namespace TheBlazorVault.Service
                         msg.Content = JsonContent.Create(vaultDtoActivation);
                     };
                 });
-
-
+        
+        
         #endregion
-
+        
         // Ajout pour récupérer l'IdUser de l'utilisateur connecté
-        // Modifié : récupère le UserDto pour un identifiant donné et retourne son IdUser
         public async Task<int?> GetCurrentUserIdAsync()
         {
-            var userDto = await downstreamApi.CallApiForUserAsync<UserDto>(
-                "EntraIDAuthWebAPI",
-                options =>
-                {
-                    options.HttpMethod = "GET";
-                    options.RelativePath = "api/Users/user"; // <-- corresponde au [HttpGet("user")]
-                });
+            var response = await http.GetAsync("api/users/id");
+            if (!response.IsSuccessStatusCode)
+                return null;
 
-            Console.WriteLine("RAW JSON: " + JsonSerializer.Serialize(userDto));
-            return userDto?.IdUser;
+            var str = await response.Content.ReadAsStringAsync();
+            if (int.TryParse(str, out var id))
+                return id;
+            return null;
         }
-
+        
         // je veut crée une entrée
         public async Task GetVaultsAsync(int vaultId, EntrieDtoCreation entrieDtoCreation)
         {
@@ -101,12 +98,5 @@ namespace TheBlazorVault.Service
             var response = await client.PostAsync($"api/vaults/{vaultId}/entries", new StringContent(json, Encoding.UTF8, "application/json"));
             Console.WriteLine(response);
         }
-    }
-
-
-    public class UserIdDto
-    {
-        public int Value { get; set; }
-    }
+    } 
 }
-

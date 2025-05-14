@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using EntityFrameworkComm.EfModel.Context;
 using Api.Service;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 
 
 
@@ -105,29 +104,6 @@ namespace Api.Controller
                 .ToListAsync();
 
             return Ok(vaults);
-        }
-
-        /// <summary>
-        /// Récupère l'identifiant interne (IdUser) de l'utilisateur actuellement connecté.
-        /// </summary>
-        [HttpGet("id")]
-        [Authorize]
-        public async Task<ActionResult<int>> GetCurrentUserId()
-        {
-            // Récupère l'identifiant externe (OID ou sub) depuis les claims
-            var externalIdStr = User.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier")
-                                ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
-                                ?? User.FindFirstValue("sub");
-
-            if (string.IsNullOrEmpty(externalIdStr) || !Guid.TryParse(externalIdStr, out var externalUserId))
-            {
-                return Unauthorized("Impossible de déterminer l'identité externe de l'utilisateur.");
-            }
-
-            // Utilise le service pour obtenir ou créer l'ID interne
-            var appUserId = await _service.GetOrCreateAppUserIdAsync(externalUserId);
-
-            return Ok(appUserId);
         }
     }
 }

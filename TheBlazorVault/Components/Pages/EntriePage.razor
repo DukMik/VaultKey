@@ -1,17 +1,86 @@
-﻿@page "/Entries"
+﻿@page "/entries/{VaultId:int}"
 
 @rendermode InteractiveServer
 
 <h3>EntriePage</h3>
 
-<input type="checkbox" @bind="_newentrie.IsDesactivated"/>
+@if (_isLoading)
+{
+    <div>Chargement...</div>
+}
+else if (_entries == null || !_entries.Any())
+{
+    <div>Aucune entrée trouvée pour ce vault.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>IdEntrie</th>
+                <th>VaultId</th>
+                <th>NameDataId</th>
+                <th>UserNameDataId</th>
+                <th>UrlDataId</th>
+                <th>CommentDataId</th>
+                <th>CreatedDate</th>
+                <th>UpdatedDate</th>
+                <th>IsDesactivated</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entry in _entries)
+            {
+                <tr>
+                    <td>@entry.IdEntrie</td>
+                    <td>@entry.VaultId</td>
+                    <td>@entry.NameDataId</td>
+                    <td>@entry.UserNameDataId</td>
+                    <td>@entry.UrlDataId</td>
+                    <td>@entry.CommentDataId</td>
+                    <td>@entry.CreatedDate.ToLocalTime()</td>
+                    <td>@entry.UpdatedDate.ToLocalTime()</td>
+                    <td>@entry.IsDesactivated</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+<h4>Créer une nouvelle entrée</h4>
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger">@_errorMessage</div>
+}
+<div>
+    <label>Nom :</label>
+    <input @bind="_newEntrie.NameData.CryptedData" placeholder="Nom crypté (byte[] base64)" />
+</div>
+<div>
+    <label>Utilisateur :</label>
+    <input @bind="_newEntrie.UserNameData.CryptedData" placeholder="Utilisateur crypté (byte[] base64)" />
+</div>
+<div>
+    <label>URL :</label>
+    <input @bind="_newEntrie.UrlData.CryptedData" placeholder="URL cryptée (byte[] base64)" />
+</div>
+<div>
+    <label>Commentaire :</label>
+    <input @bind="_newEntrie.CommentData.CryptedData" placeholder="Commentaire crypté (byte[] base64)" />
+</div>
+<div>
+    <label>Désactivé :</label>
+    <input type="checkbox" @bind="_newEntrie.IsDesactivated" />
+</div>
 <button @onclick="Callback"> test</button>
 
 @code {
 
     private void Callback()
     {
-       Console.WriteLine(_newentrie.NameData);
+        Console.WriteLine(_newEntrie.NameData);
     }
 
 }

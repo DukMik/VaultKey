@@ -27,19 +27,22 @@ public partial class EntriePage : ComponentBase
             if (firstRender)
             {
                 _isLoading = true;
-                // Récupère l'IdUser depuis l'API (base de données)
-                var userId = await CallServices.GetCurrentUserIdAsync();
-                if (userId == null)
+                var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+                var user = auth.User;
+                var idClaim = user.FindFirst("IdUser")?.Value;
+                if (!int.TryParse(idClaim, out var userId))
                 {
                     Navigation.NavigateTo("/authentication/login");
                     return;
                 }
 
+                userId = 2;
+
                 // Récupère les vaults de l'utilisateur depuis la base de données
-                var vaults = await CallServices.GetVaultsAsync(userId.Value);
+                var vaults = await CallServices.GetVaultsAsync(userId);
 
                 // Vérifie que le vault demandé appartient bien à l'utilisateur (en base)
-                var vault = vaults.FirstOrDefault(v => v.IdVault == VaultId && v.UserId == userId.Value);
+                var vault = vaults.FirstOrDefault(v => v.IdVault == VaultId && v.UserId == userId);
                 if (vault == null)
                 {
                     Navigation.NavigateTo("/unauthorized");
@@ -48,6 +51,7 @@ public partial class EntriePage : ComponentBase
 
                 // Charge les entrées du vault
                 _entries = vault.Entries ?? new List<EntrieDto>();
+
 
                 _isLoading = false;
 
@@ -59,6 +63,7 @@ public partial class EntriePage : ComponentBase
             Console.WriteLine(e);
             throw;
         }
+
     }
 
     protected override async Task OnParametersSetAsync()
@@ -71,23 +76,23 @@ public partial class EntriePage : ComponentBase
         _errorMessage = null;
         try
         {
+            // Validation simple (à adapter selon besoins)
             if (_newEntrie.NameData == null || _newEntrie.UserNameData == null)
             {
                 _errorMessage = "Tous les champs obligatoires doivent être remplis.";
                 return;
             }
 
+            // Appel API pour créer l'entrée
             await CallServices.GetVaultsAsync(VaultId, _newEntrie);
 
             // Recharge les entrées depuis la base pour l'utilisateur connecté
-            var userId = await CallServices.GetCurrentUserIdAsync();
-            if (userId == null)
-            {
-                Navigation.NavigateTo("/authentication/login");
-                return;
-            }
-            var vaults = await CallServices.GetVaultsAsync(userId.Value);
-            var vault = vaults.FirstOrDefault(v => v.IdVault == VaultId && v.UserId == userId.Value);
+            var auth = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = auth.User;
+            var idClaim = user.FindFirst("IdUser")?.Value;
+            var userId = int.Parse(idClaim!);
+            var vaults = await CallServices.GetVaultsAsync(userId);
+            var vault = vaults.FirstOrDefault(v => v.IdVault == VaultId && v.UserId == userId);
             _entries = vault?.Entries ?? new List<EntrieDto>();
             _newEntrie = new EntrieDtoCreation();
         }

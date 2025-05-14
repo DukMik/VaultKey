@@ -1,0 +1,17 @@
+﻿@page "/Entries"
+
+@rendermode InteractiveServer
+
+<h3>EntriePage</h3>
+
+<input type="checkbox" @bind="_newentrie.IsDesactivated"/>
+<button @onclick="Callback"> test</button>
+
+@code {
+
+    private void Callback()
+    {
+       Console.WriteLine(_newentrie.NameData);
+    }
+
+}
