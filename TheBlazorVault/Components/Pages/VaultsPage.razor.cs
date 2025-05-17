@@ -94,10 +94,10 @@ public partial class VaultsPage
     }
     
     /* ------------  entrer dans un vault  ------------ */
-    private void EnterVault(VaultDto clickedVault)
+    private async void EnterVault(VaultDto clickedVault)
     {
         // Récupère l'IdUser depuis l'API (base de données)
-        var userId = CallServices.GetCurrentUserIdAsync().Result;
+        var userId = await CallServices.GetCurrentUserIdAsync();
         if (userId == null || userId.Value != clickedVault.UserId)
         {
             Navigation.NavigateTo("/unauthorized");

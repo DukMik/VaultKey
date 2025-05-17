@@ -2,8 +2,6 @@
 @attribute [Authorize]
 @rendermode InteractiveServer
 
-@using TheBlazorVault.Components.Pages.Modules;
-
 <PageTitle>Vaults</PageTitle>
 
 <h3 class="mb-4">Liste de vos Vaults</h3>

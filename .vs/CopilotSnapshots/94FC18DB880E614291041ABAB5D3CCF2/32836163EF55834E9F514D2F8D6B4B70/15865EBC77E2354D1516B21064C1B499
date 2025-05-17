@@ -1,6 +1,6 @@
-﻿<div>
-    <h3>AddVaultForm</h3>
-    <p style="color: green;">[AddVaultForm rendu]</p>
+﻿<h3>AddVaultForm</h3>
+
+
     <label for="vaultName">Nom du vault</label>
     <input type="text" id="vaultName" class="form-control" @bind="_newvault.VaultName" />
 
@@ -10,5 +10,5 @@
     <label for="keyHash">Hash de la clé</label>
     <input type="text" id="keyHash" class="form-control" @bind="_newvault.KeyHash" />
 
-    <button @onclick="CreateMethodCallback">sdfffffffffffffffffffffffffffffffffffffffffff</button>
-</div>
+
+<button @onclick="CreateMethodCallback">sdfffffffffffffffffffffffffffffffffffffffffff</button>

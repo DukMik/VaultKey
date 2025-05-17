@@ -1,1 +1,12 @@
-﻿
+﻿/* Vérifiez qu'aucune règle ne masque le composant */
+:host {
+    display: block;
+    /* height: auto; */
+}
+
+/* Supprimez ou commentez toute règle qui pourrait masquer le composant, par exemple : */
+/* 
+:host {
+    display: none;
+}
+*/
