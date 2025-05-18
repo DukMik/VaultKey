@@ -3,8 +3,7 @@
     public class EntryPasswordDto
     {
         public int IdEntrie { get; set; }
-        public string PasswordData { get; set; } = string.Empty;
-        public string Iv { get; set; } = string.Empty;
-        public string Tag { get; set; } = string.Empty;
+        public string Name { get; set; }
+        public required EncryptedDataDto PasswordData { get; set; }
     }
 }

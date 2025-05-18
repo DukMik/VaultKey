@@ -28,16 +28,16 @@ namespace Api.Controllers
             _userService = userService;
         }
 
-        #if DEBUG
+#if DEBUG
         [AllowAnonymous]
 #endif
         [HttpPost]
-        public async Task<IActionResult> CreateEntrie(int vaultId,[FromBody] EntrieDtoCreation _)
+        public async Task<IActionResult> CreateEntrie(int vaultId, [FromBody] EntrieDtoCreation _)
         {
             var entriedto = _;
             var bytes = Convert.FromBase64String("MTIzNDU2Nzg5MDEyMzQ1Ng==");
             Console.WriteLine(BitConverter.ToString(bytes));
-            
+
             // 1. Vérifier l'utilisateur connecté
             var userId = _userService.CurrentUserId;
             if (userId == 0)
@@ -53,13 +53,13 @@ namespace Api.Controllers
             // 3. Créer l'entité Entrie (EF Core)
             var entry = new Entrie
             {
-                VaultId        = vaultId,
-                CreatedDate    = DateTime.UtcNow,
-                UpdatedDate   = DateTime.UtcNow,
+                VaultId = vaultId,
+                CreatedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow,
                 IsDesactivated = entriedto.IsDesactivated,
-                Vault          = null!, // Ne pas recharger le vault, la FK suffit
-                Logs           = null!, // Ne pas recharger les logs, la FK suffit
-                EncryptedData  = null!
+                Vault = null!, // Ne pas recharger le vault, la FK suffit
+                Logs = null!, // Ne pas recharger les logs, la FK suffit
+                EncryptedData = null!
             };
             _dbContext.Set<Entrie>().Add(entry);
             await _dbContext.SaveChangesAsync();
@@ -67,20 +67,43 @@ namespace Api.Controllers
             // 4. Créer les EncryptedData (EF Core)
             var encryptedEntries = new List<EncryptedData>
             {
-                new EncryptedData { EntrieId = entry.IdEntrie, Iv = entriedto.NameData.Iv, CryptedData = entriedto.NameData.CryptedData, Tag = entriedto.NameData.Tag, Entrie = null!, Logs = null!},
-                new EncryptedData { EntrieId = entry.IdEntrie, Iv = entriedto.UserNameData.Iv, CryptedData = entriedto.UserNameData.CryptedData, Tag = entriedto.UserNameData.Tag, Entrie = null!, Logs = null! },
-                new EncryptedData { EntrieId = entry.IdEntrie, Iv = entriedto.UrlData.Iv, CryptedData = entriedto.UrlData.CryptedData, Tag = entriedto.UrlData.Tag, Entrie = null!, Logs = null! },
-                new EncryptedData { EntrieId = entry.IdEntrie, Iv = entriedto.CommentData.Iv, CryptedData = entriedto.CommentData.CryptedData, Tag = entriedto.CommentData.Tag, Entrie = null!, Logs = null! },
-                new EncryptedData { EntrieId = entry.IdEntrie, Iv = entriedto.PasswordData.Iv, CryptedData = entriedto.PasswordData.CryptedData, Tag = entriedto.PasswordData.Tag, Entrie = null!, Logs = null! }
+                new EncryptedData
+                {
+                    EntrieId = entry.IdEntrie, Iv = entriedto.NameData.Iv, CryptedData = entriedto.NameData.CryptedData,
+                    Tag = entriedto.NameData.Tag, Entrie = null!, Logs = null!
+                },
+                new EncryptedData
+                {
+                    EntrieId = entry.IdEntrie, Iv = entriedto.UserNameData.Iv,
+                    CryptedData = entriedto.UserNameData.CryptedData, Tag = entriedto.UserNameData.Tag, Entrie = null!,
+                    Logs = null!
+                },
+                new EncryptedData
+                {
+                    EntrieId = entry.IdEntrie, Iv = entriedto.UrlData.Iv, CryptedData = entriedto.UrlData.CryptedData,
+                    Tag = entriedto.UrlData.Tag, Entrie = null!, Logs = null!
+                },
+                new EncryptedData
+                {
+                    EntrieId = entry.IdEntrie, Iv = entriedto.CommentData.Iv,
+                    CryptedData = entriedto.CommentData.CryptedData, Tag = entriedto.CommentData.Tag, Entrie = null!,
+                    Logs = null!
+                },
+                new EncryptedData
+                {
+                    EntrieId = entry.IdEntrie, Iv = entriedto.PasswordData.Iv,
+                    CryptedData = entriedto.PasswordData.CryptedData, Tag = entriedto.PasswordData.Tag, Entrie = null!,
+                    Logs = null!
+                }
             };
             _dbContext.Set<EncryptedData>().AddRange(encryptedEntries);
             await _dbContext.SaveChangesAsync();
 
             // 5. Mettre à jour les clés étrangères dans Entrie
-            entry.NameDataId     = encryptedEntries[0].IdEncryptedData;
+            entry.NameDataId = encryptedEntries[0].IdEncryptedData;
             entry.UserNameDataId = encryptedEntries[1].IdEncryptedData;
-            entry.UrlDataId      = encryptedEntries[2].IdEncryptedData;
-            entry.CommentDataId  = encryptedEntries[3].IdEncryptedData;
+            entry.UrlDataId = encryptedEntries[2].IdEncryptedData;
+            entry.CommentDataId = encryptedEntries[3].IdEncryptedData;
             entry.PasswordDataId = encryptedEntries[4].IdEncryptedData;
             await _dbContext.SaveChangesAsync();
 
@@ -89,11 +112,11 @@ namespace Api.Controllers
             {
                 ActionDate = DateTime.UtcNow,
                 ActionType = "EntryCreated",
-                Details    = $"Entrée {entry.IdEntrie} créée dans le vault {vaultId}.",
-                UserId     = userId,
-                VaultId    = vaultId,
-                EntryId    = entry.IdEntrie,
-                
+                Details = $"Entrée {entry.IdEntrie} créée dans le vault {vaultId}.",
+                UserId = userId,
+                VaultId = vaultId,
+                EntryId = entry.IdEntrie,
+
                 User = null! // Ne pas recharger l'utilisateur, la FK suffit'
             };
             _dbContext.Log.Add(logEntry);
@@ -101,8 +124,8 @@ namespace Api.Controllers
 
             return Ok();
         }
-    
-        
+
+
 // #if DEBUG
 //         [AllowAnonymous]
 // #endif
@@ -167,143 +190,151 @@ namespace Api.Controllers
 //
 //             return Ok(result);
 //         }
-        
-#if DEBUG
-    [AllowAnonymous]
-#endif
-    [HttpGet]
-    public async Task<IActionResult> GetEntries(int vaultId)
-    {
-        var userId = _userService.CurrentUserId;
-        if (userId == 0)
-            return Unauthorized();
-
-        // Vérifier que le vault appartient à l'utilisateur
-        var vault = await _dbContext.Set<Vault>()
-            .Include(v => v.Users)
-            .FirstOrDefaultAsync(v => v.IdVault == vaultId);
-        if (vault == null)
-            return NotFound();
-        if (!vault.Users.Any(u => u.IdUser == userId))
-            return Unauthorized();
-
-        // Récupérer les entrées
-        var entries = await _dbContext.Set<Entrie>()
-            .Where(e => e.VaultId == vaultId)
-            .ToListAsync();
-
-        var result = new List<EntrieDto>();
-        foreach (var e in entries)
-        {
-            var nameData = await _dbContext.Set<EncryptedData>().FindAsync(e.NameDataId);
-            var userNameData = await _dbContext.Set<EncryptedData>().FindAsync(e.UserNameDataId);
-            var urlData = await _dbContext.Set<EncryptedData>().FindAsync(e.UrlDataId);
-            var commentData = await _dbContext.Set<EncryptedData>().FindAsync(e.CommentDataId);
-
-            result.Add(new EntrieDto
-            {
-                IdEntrie = e.IdEntrie,
-                VaultId = e.VaultId,
-                CreatedDate = e.CreatedDate,
-                UpdatedDate = e.UpdatedDate,
-                IsDesactivated = e.IsDesactivated,
-                NameData = nameData != null ? new EncryptedDataDto
-                {
-                    Iv = nameData.Iv,
-                    CryptedData = nameData.CryptedData,
-                    Tag = nameData.Tag
-                } : new EncryptedDataDto(),
-                UserNameData = userNameData != null ? new EncryptedDataDto
-                {
-                    Iv = userNameData.Iv,
-                    CryptedData = userNameData.CryptedData,
-                    Tag = userNameData.Tag
-                } : new EncryptedDataDto(),
-                UrlData = urlData != null ? new EncryptedDataDto
-                {
-                    Iv = urlData.Iv,
-                    CryptedData = urlData.CryptedData,
-                    Tag = urlData.Tag
-                } : new EncryptedDataDto(),
-                CommentData = commentData != null ? new EncryptedDataDto
-                {
-                    Iv = commentData.Iv,
-                    CryptedData = commentData.CryptedData,
-                    Tag = commentData.Tag
-                } : new EncryptedDataDto()
-            });
-        }
-
-        var logListEntity = new Log
-        {
-            ActionDate = DateTime.UtcNow,
-            ActionType = "EntriesListed",
-            Details = $"Affichage des entrées du vault {vaultId}.",
-            UserId = userId,
-            VaultId = vaultId,
-            EntryId = null,
-            User = null!
-        };
-        _dbContext.Set<Log>().Add(logListEntity);
-        await _dbContext.SaveChangesAsync();
-
-        return Ok(result);
-    }
-
-        
-        
-        
 
 #if DEBUG
         [AllowAnonymous]
 #endif
-        [HttpGet("{entryId}/password")]
-        public async Task<IActionResult> GetEntryPassword(int vaultId, int entryId)
+        [HttpGet]
+        public async Task<IActionResult> GetEntries(int vaultId)
         {
             var userId = _userService.CurrentUserId;
             if (userId == 0)
                 return Unauthorized();
 
-            // Vérifier l'existence et l'appartenance
+            // Vérifier que le vault appartient à l'utilisateur
             var vault = await _dbContext.Set<Vault>()
                 .Include(v => v.Users)
                 .FirstOrDefaultAsync(v => v.IdVault == vaultId);
-            if (vault == null || !vault.Users.Any(u => u.IdUser == userId))
+            if (vault == null)
+                return NotFound();
+            if (!vault.Users.Any(u => u.IdUser == userId))
                 return Unauthorized();
 
-            var entry = await _dbContext.Set<Entrie>()
-                .FirstOrDefaultAsync(e => e.IdEntrie == entryId && e.VaultId == vaultId);
-            if (entry == null)
-                return NotFound();
+            // Récupérer les entrées
+            var entries = await _dbContext.Set<Entrie>()
+                .Where(e => e.VaultId == vaultId)
+                .ToListAsync();
 
-            var pwdData = await _dbContext.Set<EncryptedData>()
-                .FirstOrDefaultAsync(d => d.IdEncryptedData == entry.NameDataId /* remplacer par PasswordDataId une fois ajouté */);
-            if (pwdData == null)
-                return NotFound();
+            var result = new List<EntrieDto>();
+            foreach (var e in entries)
+            {
+                var nameData = await _dbContext.Set<EncryptedData>().FindAsync(e.NameDataId);
+                var userNameData = await _dbContext.Set<EncryptedData>().FindAsync(e.UserNameDataId);
+                var urlData = await _dbContext.Set<EncryptedData>().FindAsync(e.UrlDataId);
+                var commentData = await _dbContext.Set<EncryptedData>().FindAsync(e.CommentDataId);
 
-            // 4. Journaliser l'affichage du mot de passe
-            var logPwdEntity = new Log
+                result.Add(new EntrieDto
+                {
+                    IdEntrie = e.IdEntrie,
+                    VaultId = e.VaultId,
+                    CreatedDate = e.CreatedDate,
+                    UpdatedDate = e.UpdatedDate,
+                    IsDesactivated = e.IsDesactivated,
+                    NameData = nameData != null
+                        ? new EncryptedDataDto
+                        {
+                            Iv = nameData.Iv,
+                            CryptedData = nameData.CryptedData,
+                            Tag = nameData.Tag
+                        }
+                        : new EncryptedDataDto(),
+                    UserNameData = userNameData != null
+                        ? new EncryptedDataDto
+                        {
+                            Iv = userNameData.Iv,
+                            CryptedData = userNameData.CryptedData,
+                            Tag = userNameData.Tag
+                        }
+                        : new EncryptedDataDto(),
+                    UrlData = urlData != null
+                        ? new EncryptedDataDto
+                        {
+                            Iv = urlData.Iv,
+                            CryptedData = urlData.CryptedData,
+                            Tag = urlData.Tag
+                        }
+                        : new EncryptedDataDto(),
+                    CommentData = commentData != null
+                        ? new EncryptedDataDto
+                        {
+                            Iv = commentData.Iv,
+                            CryptedData = commentData.CryptedData,
+                            Tag = commentData.Tag
+                        }
+                        : new EncryptedDataDto()
+                });
+            }
+
+            var logListEntity = new Log
             {
                 ActionDate = DateTime.UtcNow,
-                ActionType = "EntryPasswordViewed",
-                Details    = $"Affichage du mot de passe pour l'entrée {entryId} du vault {vaultId}.",
-                UserId     = userId,
-                VaultId    = vaultId,
-                EntryId    = entryId,
-                User       = null!
+                ActionType = "EntriesListed",
+                Details = $"Affichage des entrées du vault {vaultId}.",
+                UserId = userId,
+                VaultId = vaultId,
+                EntryId = null,
+                User = null!
             };
-            _dbContext.Set<Log>().Add(logPwdEntity);
+            _dbContext.Set<Log>().Add(logListEntity);
             await _dbContext.SaveChangesAsync();
 
-            var dto = new EntryPasswordDto
-            {
-                IdEntrie     = entry.IdEntrie,
-                PasswordData = Convert.ToBase64String(pwdData.CryptedData),
-                Iv           = Convert.ToBase64String(pwdData.Iv),
-                Tag          = Convert.ToBase64String(pwdData.Tag)
-            };
-            return Ok(dto);
+            return Ok(result);
         }
+
+
+
+
+
+// #if DEBUG
+//         [AllowAnonymous]
+// #endif
+//         [HttpGet("{entryId}/password")]
+//         public async Task<IActionResult> GetEntryPassword(int vaultId, int entryId)
+//         {
+//             var userId = _userService.CurrentUserId;
+//             if (userId == 0)
+//                 return Unauthorized();
+//
+//             // Vérifier l'existence et l'appartenance
+//             var vault = await _dbContext.Set<Vault>()
+//                 .Include(v => v.Users)
+//                 .FirstOrDefaultAsync(v => v.IdVault == vaultId);
+//             if (vault == null || !vault.Users.Any(u => u.IdUser == userId))
+//                 return Unauthorized();
+//
+//             var entry = await _dbContext.Set<Entrie>()
+//                 .FirstOrDefaultAsync(e => e.IdEntrie == entryId && e.VaultId == vaultId);
+//             if (entry == null)
+//                 return NotFound();
+//
+//             var pwdData = await _dbContext.Set<EncryptedData>()
+//                 .FirstOrDefaultAsync(d => d.IdEncryptedData == entry.NameDataId /* remplacer par PasswordDataId une fois ajouté */);
+//             if (pwdData == null)
+//                 return NotFound();
+//
+//             // 4. Journaliser l'affichage du mot de passe
+//             var logPwdEntity = new Log
+//             {
+//                 ActionDate = DateTime.UtcNow,
+//                 ActionType = "EntryPasswordViewed",
+//                 Details    = $"Affichage du mot de passe pour l'entrée {entryId} du vault {vaultId}.",
+//                 UserId     = userId,
+//                 VaultId    = vaultId,
+//                 EntryId    = entryId,
+//                 User       = null!
+//             };
+//             _dbContext.Set<Log>().Add(logPwdEntity);
+//             await _dbContext.SaveChangesAsync();
+//
+//             var dto = new EntryPasswordDto
+//             {
+//                 IdEntrie     = entry.IdEntrie,
+//                 PasswordData = entry.
+//                
+//             };
+//             return Ok(dto);
+//         }
+//     }
     }
 }
 

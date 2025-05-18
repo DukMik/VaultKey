@@ -1,7 +1,10 @@
 ﻿@page "/entries/{CurrentVaultId:int}"
 @using TheApiDto
+@using TheBlazorVault.Components.Pages.Modules
 @using MudBlazor
 @inject CallServices CallServices
+@inject IDialogService DialogService
+
 
 @rendermode InteractiveServer
 
@@ -18,6 +21,7 @@
             <MudTh>Utilisateur (base64)</MudTh>
             <MudTh>URL (base64)</MudTh>
             <MudTh>Commentaire (base64)</MudTh>
+            <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Id">@context.IdEntrie</MudTd>
@@ -28,20 +32,92 @@
             <MudTd DataLabel="Utilisateur">@context.UserNameData?.CryptedData</MudTd>
             <MudTd DataLabel="URL">@context.UrlData?.CryptedData</MudTd>
             <MudTd DataLabel="Commentaire">@context.CommentData?.CryptedData</MudTd>
+            <MudTd>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" 
+                           OnClick="@(() => OpenDialog( "Edit", context))">Modifier</MudButton>
+            </MudTd>
         </RowTemplate>
     </MudTable>
+    
+    <MudButton Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create"))">
+        Ajouter une entrée
+    </MudButton>
 
     <MudAlert Severity="Severity.Error" Style="margin-top: 15px;" Dense="true" Elevation="0" @bind-Visible="_errorVisible">@_errorMessage</MudAlert>
 </MudPaper>
 
+@* @if (_showEntryForm) *@
+@* { *@
+@*     <MudDialog Open="@_showEntryForm" DisableBackdropClick="true"> *@
+@*         <TitleContent> *@
+@*             <MudText Typo="Typo.h6"> *@
+@*                 @(_isNewEntry ? "Ajouter une nouvelle entrée" : "Modifier l'entrée") *@
+@*             </MudText> *@
+@*         </TitleContent> *@
+@*         <DialogContent> *@
+@*             <MudForm @ref="_form" @bind-IsValid="@_formIsValid"> *@
+@*                 <MudTextField @bind-Value="_currentEntry.NameData.CryptedData"  *@
+@*                               Label="Nom" Required="true"  *@
+@*                               RequiredError="Le nom est requis" /> *@
+@*                  *@
+@*                 <MudTextField @bind-Value="_currentEntry.UserNameData.CryptedData"  *@
+@*                               Label="Utilisateur" Required="true"  *@
+@*                               RequiredError="L'utilisateur est requis" /> *@
+@*                  *@
+@*                 <MudTextField @bind-Value="_currentEntry.UrlData.CryptedData"  *@
+@*                               Label="URL" /> *@
+@*                  *@
+@*                 <MudTextField @bind-Value="_currentEntry.CommentData.CryptedData"  *@
+@*                               Label="Commentaire" /> *@
+@*             </MudForm> *@
+@*         </DialogContent> *@
+@*         <DialogActions> *@
+@*             <MudButton Color="Color.Error" OnClick="@CancelEntryForm">Annuler</MudButton> *@
+@*             <MudButton Color="Color.Primary" Disabled="@(!_formIsValid)"  *@
+@*                        OnClick="@SaveEntry">Enregistrer</MudButton> *@
+@*         </DialogActions> *@
+@*     </MudDialog> *@
+@*      *@
+@*      *@
+@*     <MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary"> *@
+@*         Open Simple Dialog *@
+@*     </MudButton> *@
+    
+    
+    <div>
+        @if (isEdit)
+        {
+            <EntrieDialog vault="CurrentVaultId" Entriecreation="_currentEntrieCreation" CloseCallback="close" UpdateCallback="EditEntrie" CreateCallback="CreateNewEntrieToApi" IsCreateOrIsEdit=@typemodal></EntrieDialog>
+        }
+        
+    </div>
+}
+
 @code {
     [Parameter] public int CurrentVaultId {  get; set; }
+    
     private List<EntrieDto> _entries = new();
-
+    
     private bool _errorVisible = false;
     private string _errorMessage = "";
-
     
+    private bool _showEntryForm = false;
+    private bool _isNewEntry = true;
+    private bool _formIsValid = false;
+    private MudForm _form;
+    private bool isEdit;
+    private string typemodal;
+    
+    private EntrieDtoCreation _currentEntrieCreation = new();
+    private EntrieDto _currentEntrie = new EntrieDto
+    {
+        NameData = new EncryptedDataDto(),
+        UserNameData = new EncryptedDataDto(),
+        UrlData = new EncryptedDataDto(),
+        CommentData = new EncryptedDataDto()
+    };
+   
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         try
@@ -59,12 +135,110 @@
         }
     }
     
-    
-    
-   
-
     private async Task<List<EntrieDto>> GettingAll(int currentVaultId)
     {
         return await CallServices.GetEntriesAsync(currentVaultId);
     }
+    
+    // private Task OpenDialogAsync()
+    // {
+    //     var options = new DialogOptions { CloseOnEscapeKey = true };
+    //
+    //     return DialogService.ShowAsync<EntrieDialog>("Simple Dialog", options);
+    // }
+
+
+    private void OpenDialog(string typeButton, EntrieDto entrie = null)
+    {
+        isEdit = true;
+        typemodal = typeButton;
+        _currentEntrie = entrie; // il faut que ce soit un entridtocreation car l'update et le create vobt se reposser dessu pour l'instant mettre new Password
+        
+    }
+    
+    private async void CreateNewEntrieToApi((int vaultId, EntrieDtoCreation entrie) valueTuple)
+    {
+        try
+        {
+            isEdit = true;
+
+            var response = await CallServices.AddEntryAsync(valueTuple.vaultId, valueTuple.entrie);
+            if (response.IsSuccessStatusCode)
+            {
+                _showEntryForm = false;
+                _entries = await GettingAll(valueTuple.vaultId);
+            }
+            else
+            {
+                _errorVisible = true;
+                _errorMessage = "Erreur lors de la création de l'entrée.";
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _errorVisible = true;
+            _errorMessage = $"Erreur: {ex.Message}";
+        }
+        
+      
+    }
+    
+    private void EditEntrie(EntrieDto entrie)
+    {
+        _isNewEntry = false;
+        _currentEntrieCreation = new EntrieDtoCreation
+        {
+            NameData = new EncryptedDataDtoCreation { CryptedData = entrie.NameData?.CryptedData },
+            UserNameData = new EncryptedDataDtoCreation { CryptedData = entrie.UserNameData?.CryptedData },
+            UrlData = new EncryptedDataDtoCreation { CryptedData = entrie.UrlData?.CryptedData },
+            CommentData = new EncryptedDataDtoCreation { CryptedData = entrie.CommentData?.CryptedData }
+        };
+        _showEntryForm = true;
+    }
+    
+    private void close()
+    {
+        isEdit = false;
+        StateHasChanged();
+    }
+    
+    
+    private async Task SaveEntry()
+    {
+        if (_isNewEntry)
+        {
+            try
+            {
+                var response = await CallServices.AddEntryAsync(CurrentVaultId, _currentEntrieCreation);
+                if (response.IsSuccessStatusCode)
+                {
+                    _showEntryForm = false;
+                    _entries = await GettingAll(CurrentVaultId);
+                }
+                else
+                {
+                    _errorVisible = true;
+                    _errorMessage = "Erreur lors de la création de l'entrée.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _errorVisible = true;
+                _errorMessage = $"Erreur: {ex.Message}";
+            }
+        }
+        else
+        {
+            // Ici, vous pourriez ajouter la méthode pour modifier une entrée existante
+            // Note: Cette fonctionnalité nécessiterait d'ajouter une méthode correspondante dans CallServices
+            _errorVisible = true;
+            _errorMessage = "La modification d'entrées n'est pas encore implémentée.";
+        }
+        
+        _showEntryForm = false;
+    }
+
+   
+
 }
