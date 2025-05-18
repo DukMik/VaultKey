@@ -1,86 +1,70 @@
-﻿@page "/entries/{VaultId:int}"
+﻿@page "/entries/{CurrentVaultId:int}"
+@using TheApiDto
+@using MudBlazor
+@inject CallServices CallServices
 
 @rendermode InteractiveServer
 
-<h3>EntriePage</h3>
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h5">Liste des entrées du vault @CurrentVaultId</MudText>
 
-@if (_isLoading)
-{
-    <div>Chargement...</div>
-}
-else if (_entries == null || !_entries.Any())
-{
-    <div>Aucune entrée trouvée pour ce vault.</div>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>IdEntrie</th>
-                <th>VaultId</th>
-                <th>NameDataId</th>
-                <th>UserNameDataId</th>
-                <th>UrlDataId</th>
-                <th>CommentDataId</th>
-                <th>CreatedDate</th>
-                <th>UpdatedDate</th>
-                <th>IsDesactivated</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var entry in _entries)
-            {
-                <tr>
-                    <td>@entry.IdEntrie</td>
-                    <td>@entry.VaultId</td>
-                    <td>@entry.NameDataId</td>
-                    <td>@entry.UserNameDataId</td>
-                    <td>@entry.UrlDataId</td>
-                    <td>@entry.CommentDataId</td>
-                    <td>@entry.CreatedDate.ToLocalTime()</td>
-                    <td>@entry.UpdatedDate.ToLocalTime()</td>
-                    <td>@entry.IsDesactivated</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+    <MudTable Items="_entries" Hover="true" Bordered="true" Striped="true">
+        <HeaderContent>
+            <MudTh>Id</MudTh>
+            <MudTh>Créé</MudTh>
+            <MudTh>Modifié</MudTh>
+            <MudTh>Désactivée</MudTh>
+            <MudTh>Nom (base64)</MudTh>
+            <MudTh>Utilisateur (base64)</MudTh>
+            <MudTh>URL (base64)</MudTh>
+            <MudTh>Commentaire (base64)</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Id">@context.IdEntrie</MudTd>
+            <MudTd DataLabel="Créé">@context.CreatedDate.ToString("g")</MudTd>
+            <MudTd DataLabel="Modifié">@context.UpdatedDate.ToString("g")</MudTd>
+            <MudTd DataLabel="Désactivée">@context.IsDesactivated</MudTd>
+            <MudTd DataLabel="Nom">@context.NameData?.CryptedData</MudTd>
+            <MudTd DataLabel="Utilisateur">@context.UserNameData?.CryptedData</MudTd>
+            <MudTd DataLabel="URL">@context.UrlData?.CryptedData</MudTd>
+            <MudTd DataLabel="Commentaire">@context.CommentData?.CryptedData</MudTd>
+        </RowTemplate>
+    </MudTable>
 
-<hr />
-
-<h4>Créer une nouvelle entrée</h4>
-@if (!string.IsNullOrEmpty(_errorMessage))
-{
-    <div class="alert alert-danger">@_errorMessage</div>
-}
-<div>
-    <label>Nom :</label>
-    <input @bind="_newEntrie.NameData.CryptedData" placeholder="Nom crypté (byte[] base64)" />
-</div>
-<div>
-    <label>Utilisateur :</label>
-    <input @bind="_newEntrie.UserNameData.CryptedData" placeholder="Utilisateur crypté (byte[] base64)" />
-</div>
-<div>
-    <label>URL :</label>
-    <input @bind="_newEntrie.UrlData.CryptedData" placeholder="URL cryptée (byte[] base64)" />
-</div>
-<div>
-    <label>Commentaire :</label>
-    <input @bind="_newEntrie.CommentData.CryptedData" placeholder="Commentaire crypté (byte[] base64)" />
-</div>
-<div>
-    <label>Désactivé :</label>
-    <input type="checkbox" @bind="_newEntrie.IsDesactivated" />
-</div>
-<button @onclick="Callback"> test</button>
+    <MudAlert Severity="Severity.Error" Style="margin-top: 15px;" Dense="true" Elevation="0" @bind-Visible="_errorVisible">@_errorMessage</MudAlert>
+</MudPaper>
 
 @code {
+    [Parameter] public int CurrentVaultId {  get; set; }
+    private List<EntrieDto> _entries = new();
 
-    private void Callback()
+    private bool _errorVisible = false;
+    private string _errorMessage = "";
+
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Console.WriteLine(_newEntrie.NameData);
+        try
+        {
+            if (firstRender)
+            {
+                _entries = await GettingAll(CurrentVaultId);
+                StateHasChanged();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
+    
+    
+    
+   
 
+    private async Task<List<EntrieDto>> GettingAll(int currentVaultId)
+    {
+        return await CallServices.GetEntriesAsync(currentVaultId);
+    }
 }

@@ -18,6 +18,7 @@ namespace TheBlazorVault.Service
     {
         
         private List<VaultDto> _vaultsDtos = [];
+        private List<EntrieDto> _entriesDtos = [];
         private readonly HttpClient http = new HttpClient();
         
         #region For users
@@ -33,6 +34,20 @@ namespace TheBlazorVault.Service
                 }) ?? [];
             
             return _vaultsDtos ;
+        }
+        
+        
+        // async obligatoir mais pourquoi ?
+        public async Task<int?> GetCurrentUserIdAsync()
+        {
+            var userDto = await downstreamApi.CallApiForUserAsync<UserDto>(
+                "EntraIDAuthWebAPI",
+                options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = "api/Users/user"; // <-- corresponde au [HttpGet("user")]
+                });
+            return userDto?.IdUser;
         }
         #endregion
         
@@ -75,32 +90,35 @@ namespace TheBlazorVault.Service
 
 
         #endregion
+        
+        #region For Entries
 
-        // Ajout pour récupérer l'IdUser de l'utilisateur connecté
-        // Modifié : récupère le UserDto pour un identifiant donné et retourne son IdUser
-        public async Task<int?> GetCurrentUserIdAsync()
-        {
-            var userDto = await downstreamApi.CallApiForUserAsync<UserDto>(
-                "EntraIDAuthWebAPI",
-                options =>
-                {
-                    options.HttpMethod = "GET";
-                    options.RelativePath = "api/Users/user"; // <-- corresponde au [HttpGet("user")]
-                });
-
-            Console.WriteLine("RAW JSON: " + JsonSerializer.Serialize(userDto));
-            return userDto?.IdUser;
-        }
 
         // je veut crée une entrée
-        public async Task GetVaultsAsync(int vaultId, EntrieDtoCreation entrieDtoCreation)
+        public async Task<HttpResponseMessage> AddEntryAsync(int vaultId, EntrieDtoCreation entrieDtoCreation)
         {
             var json = JsonSerializer.Serialize(entrieDtoCreation);
             var client = new HttpClient();
             
             var response = await client.PostAsync($"api/vaults/{vaultId}/entries", new StringContent(json, Encoding.UTF8, "application/json"));
             Console.WriteLine(response);
+            HttpResponseMessage test = new HttpResponseMessage();
+            return test;
         }
+
+        public async Task<List<EntrieDto>> GetEntriesAsync(int vaultId)
+        {
+            _entriesDtos = await downstreamApi.CallApiForUserAsync<List<EntrieDto>>(
+                "EntraIDAuthWebAPI",
+                options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = $"/api/vault/{vaultId}/entries";
+                }) ?? [];
+
+            return _entriesDtos;
+        }
+        #endregion
     }
 
 

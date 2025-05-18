@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <Compile Remove="Components\Dialogs\PasswordDialog.razor.cs" />
+      <Compile Remove="Components\Pages\VaultsPage2.razor.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -15,6 +16,7 @@
       <Content Remove="Components\Pages\Index.razor" />
       <Content Remove="Components\Pages\Weather.razor" />
       <Content Remove="Components\Shared\LoginDisplay.razor" />
+      <Content Remove="Components\Pages\VaultsPage2.razor" />
     </ItemGroup>
 
     <ItemGroup>

@@ -2,11 +2,11 @@
 
 public class EncryptedDataDto
 {
-    private int IdEncryptedData { get; set; }
-    private int EntrieId { get; set; }
-    private byte[] Iv { get; set; } = Array.Empty<byte>();
-    private byte[] CryptedData { get; set; } = Array.Empty<byte>();
-    private byte[] Tag { get; set; } = Array.Empty<byte>();
-    public required EntrieDto Entrie { get; set; }
-    public required List<LogDto> AuditLogs { get; set; }
+    public int IdEncryptedData { get; set; }
+    public int EntrieId { get; set; }
+    public byte[] Iv { get; set; } = Array.Empty<byte>();
+    public byte[] CryptedData { get; set; } = Array.Empty<byte>();
+    public byte[] Tag { get; set; } = Array.Empty<byte>();
+    public EntrieDto? Entrie { get; set; }
+    public List<LogDto>? Logs { get; set; }
 }

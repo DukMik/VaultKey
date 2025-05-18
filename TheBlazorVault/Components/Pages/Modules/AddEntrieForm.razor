@@ -1,0 +1,14 @@
+﻿<div>
+    <h3>AddEntrieForm</h3>
+    @* <p style="color: green;">[AddEntrieForm rendu]</p> *@
+    <label for="nameData">Nom de l'entrie</label>
+    <input type="text" id="nameData" class="form-control" @bind="_newEntrie.NameData.CryptedData" />
+
+    <label for="commentData">commentaire</label>
+    <input type="text" id="commentData" class="form-control" @bind="_newEntrie.CommentData.CryptedData" />
+
+    <label for="passwordData">mot de passe</label>
+    <input type="text" id="passwordData" class="form-control" @bind="_newEntrie.PasswordData.CryptedData" />
+
+    <button @onclick="CreateMethodCallback">ENtttry</button>
+</div>

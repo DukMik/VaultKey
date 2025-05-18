@@ -111,8 +111,6 @@ public partial class VaultsPage
     
     
     
-    
-    
     /* ------------  desactiver un vault  ------------ */
     private async Task DesactivateVault(VaultDto clickedVault)
     {
@@ -146,6 +144,4 @@ public partial class VaultsPage
             throw;
         }
     }
-
-    
 }

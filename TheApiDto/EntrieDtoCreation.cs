@@ -3,9 +3,9 @@
 public class EntrieDtoCreation
 {
     public bool IsDesactivated { get; set; } = false;
-    public CreateEncryptedDataDto NameData { get; set; } = new();
-    public CreateEncryptedDataDto UserNameData { get; set; } = new();
-    public CreateEncryptedDataDto UrlData { get; set; } = new();
-    public CreateEncryptedDataDto CommentData { get; set; } = new();
-    public CreateEncryptedDataDto PasswordData { get; set; } = new();
+    public EncryptedDataDtoCreation NameData { get; set; } = new();
+    public EncryptedDataDtoCreation UserNameData { get; set; } = new();
+    public EncryptedDataDtoCreation UrlData { get; set; } = new();
+    public EncryptedDataDtoCreation CommentData { get; set; } = new();
+    public EncryptedDataDtoCreation PasswordData { get; set; } = new();
 }
