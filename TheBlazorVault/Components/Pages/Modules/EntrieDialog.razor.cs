@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Components;
 using TheApiDto;
+using System.Security.Cryptography;
+using TheBlazorVault.Service;
 
 namespace TheBlazorVault.Components.Pages.Modules;
 
@@ -9,21 +11,22 @@ public partial class EntrieDialog : ComponentBase
     [Parameter]
     public EntrieDto? EntrieUpdate { get; set; } //=>passe en EntrieDtoCreation par la suite avec le password en param
     [Parameter]
-    public int vault { get; set; } = default ;
+    public int CurrentVault { get; set; } = default ;
     
     [Parameter]
     public EventCallback<int> CloseCallback { get; set; } = default ;
     
     [Parameter]
-    public EventCallback<EntrieDto> UpdateCallback { get; set; } = default ;
+    public EventCallback<EntrieUncryptedDto> UpdateCallback { get; set; } = default ;
     
     [Parameter]
-    public EventCallback<(int vaultId, EntrieDtoCreation entrieCreation)> CreateCallback { get; set; } = default ;
+    public EventCallback<EntrieUncryptedDto> CreateCallback { get; set; } = default ;
     
     [Parameter]
     public string IsCreateOrIsEdit { get; set; } = default ;
     
-    
+    [Inject]
+    CallServices CallServices { get; set; } = default!;
     
     public bool desactivated { get; set; } = false;
     public string password { get; set; }
@@ -33,6 +36,7 @@ public partial class EntrieDialog : ComponentBase
     public string comment { get; set; }
     
     public EntrieDto EntrieDto { get; set; }
+    public EntrieUncryptedDto UncryptedEntrieDto { get; set; }
     public EntrieDtoCreation EntrieDtoCreation { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -41,7 +45,7 @@ public partial class EntrieDialog : ComponentBase
         {
             try
             {
-                password = Encoding.UTF8.GetString(EntrieUpdate.NameData.CryptedData); // c'est ici que je déchiffre les données 
+                //password = Encoding.UTF8.GetString(EntrieUpdate.NameData.CryptedData); // c'est ici que je déchiffre les données 
                 base.OnAfterRender(firstRender);
             }
             catch (Exception e)
@@ -59,11 +63,7 @@ public partial class EntrieDialog : ComponentBase
     
     public async void  Update()
     {
-        // chiffer les information avant des les envoyer a l'api
-        
-        UpdateCallback.InvokeAsync(EntrieDto);
-        
-        // a voir pour appler l'api direvctement ici 
+        UpdateCallback.InvokeAsync(UncryptedEntrieDto);
     }
     
     public void Create()
@@ -71,7 +71,7 @@ public partial class EntrieDialog : ComponentBase
         // todo affetcer les valleurs du form dans le DTO cration 
         
         
-        CreateCallback.InvokeAsync((vault, EntrieDtoCreation));
+        CreateCallback.InvokeAsync(UncryptedEntrieDto);
     }
     
 }

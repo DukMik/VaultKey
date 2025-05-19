@@ -42,6 +42,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddMudServices();
 
 builder.Services.AddScoped<CallServices>();
+builder.Services.AddScoped<CryptoHelper>();
 
 var app = builder.Build();
 

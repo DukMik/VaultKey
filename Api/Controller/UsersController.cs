@@ -106,6 +106,35 @@ namespace Api.Controller
 
             return Ok(vaults);
         }
+        
+        /// <summary>
+        /// Récupère la liste des coffres (vaults) d’un utilisateur spécifié par son identifiant.
+        /// </summary>
+        [HttpGet("vault/{id}")]
+        public async Task<ActionResult<VaultDto>> GetOneVaultForCurrentUser(int id)
+        {
+            var userId = _service.CurrentUserId;
+
+            if (userId == int.MinValue)
+                return Unauthorized();
+            
+            var vault = await _context.Vault
+                .Where(v => v.IdVault == id && !v.IsDesactivated)
+                .Select(v => new VaultDto
+                {
+                    IdVault = v.IdVault,
+                    UserId = v.UserId,
+                    VaultName = v.VaultName,
+                    DateCreated = v.DateCreated,
+                    KeyHash = v.KeyHash,
+                    Salt = v.Salt,
+                    PrivateKey = v.PrivateKey,
+                    IsDesactivated = v.IsDesactivated
+                })
+                .FirstOrDefaultAsync();
+
+            return Ok(vault);
+        }
 
         /// <summary>
         /// Récupère l'identifiant interne (IdUser) de l'utilisateur actuellement connecté.

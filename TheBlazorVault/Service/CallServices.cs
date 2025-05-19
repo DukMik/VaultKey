@@ -35,6 +35,17 @@ namespace TheBlazorVault.Service
             
             return _vaultsDtos ;
         }
+        public async Task<VaultDto> GetOneVaultAsync(int VaultId)
+        {
+            var vaultDto = await downstreamApi.CallApiForUserAsync<VaultDto>("EntraIDAuthWebAPI", options =>
+            {
+                options.HttpMethod = "GET";
+                options.RelativePath = $"api/Users/vault/{VaultId}";
+            });
+
+            return vaultDto!;
+        }
+        
         
         
         // async obligatoir mais pourquoi ?

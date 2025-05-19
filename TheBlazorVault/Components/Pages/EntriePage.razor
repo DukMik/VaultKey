@@ -1,4 +1,5 @@
 ﻿@page "/entries/{CurrentVaultId:int}"
+@using System.Text
 @using TheApiDto
 @using TheBlazorVault.Components.Pages.Modules
 @using MudBlazor
@@ -11,7 +12,7 @@
 <MudPaper Class="pa-4">
     <MudText Typo="Typo.h5">Liste des entrées du vault @CurrentVaultId</MudText>
 
-    <MudTable Items="_entries" Hover="true" Bordered="true" Striped="true">
+    <MudTable Items="_entriesUncrypted" Hover="true" Bordered="true" Striped="true">
         <HeaderContent>
             <MudTh>Id</MudTh>
             <MudTh>Créé</MudTh>
@@ -28,10 +29,10 @@
             <MudTd DataLabel="Créé">@context.CreatedDate.ToString("g")</MudTd>
             <MudTd DataLabel="Modifié">@context.UpdatedDate.ToString("g")</MudTd>
             <MudTd DataLabel="Désactivée">@context.IsDesactivated</MudTd>
-            <MudTd DataLabel="Nom">@context.NameData?.CryptedData</MudTd>
-            <MudTd DataLabel="Utilisateur">@context.UserNameData?.CryptedData</MudTd>
-            <MudTd DataLabel="URL">@context.UrlData?.CryptedData</MudTd>
-            <MudTd DataLabel="Commentaire">@context.CommentData?.CryptedData</MudTd>
+            <MudTd DataLabel="Nom">@context.NameData</MudTd>
+            <MudTd DataLabel="Utilisateur">@context.UserNameData</MudTd>
+            <MudTd DataLabel="URL">@context.UrlData</MudTd>
+            <MudTd DataLabel="Commentaire">@context.CommentData</MudTd>
             <MudTd>
                 <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" 
                            OnClick="@(() => OpenDialog( "Edit", context))">Modifier</MudButton>
@@ -39,57 +40,23 @@
         </RowTemplate>
     </MudTable>
     
-    <MudButton Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create"))">
+     <MudButton Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create", _currentUncryptedEntrie))"> 
         Ajouter une entrée
     </MudButton>
 
     <MudAlert Severity="Severity.Error" Style="margin-top: 15px;" Dense="true" Elevation="0" @bind-Visible="_errorVisible">@_errorMessage</MudAlert>
 </MudPaper>
-
-@* @if (_showEntryForm) *@
-@* { *@
-@*     <MudDialog Open="@_showEntryForm" DisableBackdropClick="true"> *@
-@*         <TitleContent> *@
-@*             <MudText Typo="Typo.h6"> *@
-@*                 @(_isNewEntry ? "Ajouter une nouvelle entrée" : "Modifier l'entrée") *@
-@*             </MudText> *@
-@*         </TitleContent> *@
-@*         <DialogContent> *@
-@*             <MudForm @ref="_form" @bind-IsValid="@_formIsValid"> *@
-@*                 <MudTextField @bind-Value="_currentEntry.NameData.CryptedData"  *@
-@*                               Label="Nom" Required="true"  *@
-@*                               RequiredError="Le nom est requis" /> *@
-@*                  *@
-@*                 <MudTextField @bind-Value="_currentEntry.UserNameData.CryptedData"  *@
-@*                               Label="Utilisateur" Required="true"  *@
-@*                               RequiredError="L'utilisateur est requis" /> *@
-@*                  *@
-@*                 <MudTextField @bind-Value="_currentEntry.UrlData.CryptedData"  *@
-@*                               Label="URL" /> *@
-@*                  *@
-@*                 <MudTextField @bind-Value="_currentEntry.CommentData.CryptedData"  *@
-@*                               Label="Commentaire" /> *@
-@*             </MudForm> *@
-@*         </DialogContent> *@
-@*         <DialogActions> *@
-@*             <MudButton Color="Color.Error" OnClick="@CancelEntryForm">Annuler</MudButton> *@
-@*             <MudButton Color="Color.Primary" Disabled="@(!_formIsValid)"  *@
-@*                        OnClick="@SaveEntry">Enregistrer</MudButton> *@
-@*         </DialogActions> *@
-@*     </MudDialog> *@
-@*      *@
-@*      *@
-@*     <MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary"> *@
-@*         Open Simple Dialog *@
-@*     </MudButton> *@
     
     
     <div>
         @if (isEdit)
         {
-            <EntrieDialog vault="CurrentVaultId" Entriecreation="_currentEntrieCreation" CloseCallback="close" UpdateCallback="EditEntrie" CreateCallback="CreateNewEntrieToApi" IsCreateOrIsEdit=@typemodal></EntrieDialog>
+            <EntrieDialog vault="CurrentVaultId" 
+                          CloseCallback="@(() => close())" 
+                          UpdateCallback="@((EntrieUncryptedDto e) => UpdateCurrentEntrieToApi(e))" 
+                          CreateCallback="@((EntrieUncryptedDto e) => CreateNewEntrieToApi(e))" 
+                          IsCreateOrIsEdit="@typemodal"></EntrieDialog>
         }
-        
     </div>
 }
 
@@ -97,6 +64,8 @@
     [Parameter] public int CurrentVaultId {  get; set; }
     
     private List<EntrieDto> _entries = new();
+    private List<EntrieUncryptedDto> _entriesUncrypted = new();
+    private VaultDto _currentVault = new VaultDto();
     
     private bool _errorVisible = false;
     private string _errorMessage = "";
@@ -108,6 +77,7 @@
     private bool isEdit;
     private string typemodal;
     
+    
     private EntrieDtoCreation _currentEntrieCreation = new();
     private EntrieDto _currentEntrie = new EntrieDto
     {
@@ -116,8 +86,10 @@
         UrlData = new EncryptedDataDto(),
         CommentData = new EncryptedDataDto()
     };
-   
+    private EntrieUncryptedDto _currentUncryptedEntrie = new EntrieUncryptedDto();
 
+    private byte[] _globalIV;
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         try
@@ -125,6 +97,28 @@
             if (firstRender)
             {
                 _entries = await GettingAll(CurrentVaultId);
+                if (_entries.Count() > 0)
+                {
+                    _globalIV =_entries?.FirstOrDefault().NameData.Iv;
+                }
+                _currentVault = await CallServices.GetOneVaultAsync(CurrentVaultId);
+
+                _entriesUncrypted.Clear();
+                foreach (var entrie in _entries)
+                {
+                    var entryTemp = new EntrieUncryptedDto
+                    {
+                        IdEntrie = entrie.IdEntrie,
+                        CreatedDate = entrie.CreatedDate,
+                        UpdatedDate = entrie.UpdatedDate,
+                        IsDesactivated = entrie.IsDesactivated,
+                        NameData = CryptoHelper.Dechiffrer(entrie.NameData.CryptedData, _currentVault.PrivateKey, entrie.NameData.Iv),
+                        UserNameData = CryptoHelper.Dechiffrer(entrie.UserNameData.CryptedData, _currentVault.PrivateKey, entrie.UserNameData.Iv),
+                        UrlData = CryptoHelper.Dechiffrer(entrie.UrlData.CryptedData, _currentVault.PrivateKey, entrie.UrlData.Iv),
+                        CommentData = CryptoHelper.Dechiffrer(entrie.CommentData.CryptedData, _currentVault.PrivateKey, entrie.CommentData.Iv)
+                    };
+                    _entriesUncrypted.Add(entryTemp);
+                }
                 StateHasChanged();
             }
         }
@@ -139,34 +133,37 @@
     {
         return await CallServices.GetEntriesAsync(currentVaultId);
     }
-    
-    // private Task OpenDialogAsync()
-    // {
-    //     var options = new DialogOptions { CloseOnEscapeKey = true };
-    //
-    //     return DialogService.ShowAsync<EntrieDialog>("Simple Dialog", options);
-    // }
 
-
-    private void OpenDialog(string typeButton, EntrieDto entrie = null)
+    private void OpenDialog(string typeButton, EntrieUncryptedDto entrie)
     {
         isEdit = true;
         typemodal = typeButton;
-        _currentEntrie = entrie; // il faut que ce soit un entridtocreation car l'update et le create vobt se reposser dessu pour l'instant mettre new Password
-        
-    }
+        _currentUncryptedEntrie = entrie; 
+        StateHasChanged();
+    } 
     
-    private async void CreateNewEntrieToApi((int vaultId, EntrieDtoCreation entrie) valueTuple)
+    private async void CreateNewEntrieToApi(EntrieUncryptedDto entrie)
     {
         try
         {
+            
+            // todo convertir EntrieUncryptedDto en EntrieDtoCreation
+            
+            EntrieDtoCreation entrieDtoCreation = new EntrieDtoCreation
+            {
+                NameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.NameData, _currentVault.PrivateKey, _globalIV), },
+                UserNameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UserNameData, _currentVault.PrivateKey, _globalIV) },
+                PasswordData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.PasswordData, _currentVault.PrivateKey, _globalIV) },
+                UrlData = new EncryptedDataDtoCreation { CryptedData =CryptoHelper.Chiffrer(entrie.UrlData, _currentVault.PrivateKey, _globalIV) },
+                CommentData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.CommentData, _currentVault.PrivateKey, _globalIV) }
+            };
             isEdit = true;
 
-            var response = await CallServices.AddEntryAsync(valueTuple.vaultId, valueTuple.entrie);
+            var response = await CallServices.AddEntryAsync(CurrentVaultId, entrieDtoCreation);
             if (response.IsSuccessStatusCode)
             {
                 _showEntryForm = false;
-                _entries = await GettingAll(valueTuple.vaultId);
+                _entries = await GettingAll(CurrentVaultId);
             }
             else
             {
@@ -184,16 +181,21 @@
       
     }
     
-    private void EditEntrie(EntrieDto entrie)
+    private void UpdateCurrentEntrieToApi(EntrieUncryptedDto entrie)
     {
+        
+        // todo convertir EntrieUncryptedDto en EntrieDtoCreation
+        
+        
+        
         _isNewEntry = false;
-        _currentEntrieCreation = new EntrieDtoCreation
-        {
-            NameData = new EncryptedDataDtoCreation { CryptedData = entrie.NameData?.CryptedData },
-            UserNameData = new EncryptedDataDtoCreation { CryptedData = entrie.UserNameData?.CryptedData },
-            UrlData = new EncryptedDataDtoCreation { CryptedData = entrie.UrlData?.CryptedData },
-            CommentData = new EncryptedDataDtoCreation { CryptedData = entrie.CommentData?.CryptedData }
-        };
+       // _currentEntrieCreation = new EntrieDtoCreation
+       // {
+       //     NameData = new EncryptedDataDtoCreation { CryptedData = entrie.NameData?.CryptedData },
+       //     UserNameData = new EncryptedDataDtoCreation { CryptedData = entrie.UserNameData?.CryptedData },
+       //     UrlData = new EncryptedDataDtoCreation { CryptedData = entrie.UrlData?.CryptedData },
+       //     CommentData = new EncryptedDataDtoCreation { CryptedData = entrie.CommentData?.CryptedData }
+       // };
         _showEntryForm = true;
     }
     
