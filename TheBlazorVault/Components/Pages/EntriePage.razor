@@ -35,49 +35,45 @@
             <MudTd DataLabel="Commentaire">@context.CommentData</MudTd>
             <MudTd>
                 <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" 
-                           OnClick="@(() => OpenDialog( "Edit", context))">Modifier</MudButton>
+                OnClick="@(() => OpenDialog( "Edit", context))">Modifier</MudButton>
             </MudTd>
         </RowTemplate>
     </MudTable>
-    
-     <MudButton Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create", _currentUncryptedEntrie))"> 
+
+    <MudButton Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create", _currentUncryptedEntrie))"> 
         Ajouter une entrée
     </MudButton>
 
     <MudAlert Severity="Severity.Error" Style="margin-top: 15px;" Dense="true" Elevation="0" @bind-Visible="_errorVisible">@_errorMessage</MudAlert>
 </MudPaper>
-    
-    
-    <div>
-        @if (isEdit)
-        {
-            <EntrieDialog vault="CurrentVaultId" 
-                          CloseCallback="@(() => close())" 
-                          UpdateCallback="@((EntrieUncryptedDto e) => UpdateCurrentEntrieToApi(e))" 
-                          CreateCallback="@((EntrieUncryptedDto e) => CreateNewEntrieToApi(e))" 
-                          IsCreateOrIsEdit="@typemodal"></EntrieDialog>
-        }
-    </div>
+
+
+<div>
+    @if (isEdit)
+    {
+        <EntrieDialog CurrentVault="CurrentVaultId" CloseCallback="Close" UpdateCallback="UpdateCurrentEntrieToApi" CreateCallback="CreateNewEntrieToApi" IsCreateOrIsEdit=@typemodal></EntrieDialog>
+    }
+</div>
 }
 
 @code {
     [Parameter] public int CurrentVaultId {  get; set; }
-    
+
     private List<EntrieDto> _entries = new();
     private List<EntrieUncryptedDto> _entriesUncrypted = new();
     private VaultDto _currentVault = new VaultDto();
-    
+
     private bool _errorVisible = false;
     private string _errorMessage = "";
-    
+
     private bool _showEntryForm = false;
     private bool _isNewEntry = true;
     private bool _formIsValid = false;
     private MudForm _form;
     private bool isEdit;
     private string typemodal;
-    
-    
+
+
     private EntrieDtoCreation _currentEntrieCreation = new();
     private EntrieDto _currentEntrie = new EntrieDto
     {
@@ -89,7 +85,7 @@
     private EntrieUncryptedDto _currentUncryptedEntrie = new EntrieUncryptedDto();
 
     private byte[] _globalIV;
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         try
@@ -128,7 +124,7 @@
             throw;
         }
     }
-    
+
     private async Task<List<EntrieDto>> GettingAll(int currentVaultId)
     {
         return await CallServices.GetEntriesAsync(currentVaultId);
@@ -141,21 +137,27 @@
         _currentUncryptedEntrie = entrie; 
         StateHasChanged();
     } 
-    
+
     private async void CreateNewEntrieToApi(EntrieUncryptedDto entrie)
     {
         try
-        {
+        {            
             
-            // todo convertir EntrieUncryptedDto en EntrieDtoCreation
-            
+            // n'est utilie que la première fois ensuite tout les IV seront le mêmes 
+            if (_globalIV== null)
+            {
+                _globalIV = CryptoHelper.AesHelper.GenerateRandomBytes(16);
+            }
+
+            //je convertis les string en EncryptedDataDtoCreation
             EntrieDtoCreation entrieDtoCreation = new EntrieDtoCreation
             {
-                NameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.NameData, _currentVault.PrivateKey, _globalIV), },
-                UserNameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UserNameData, _currentVault.PrivateKey, _globalIV) },
-                PasswordData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.PasswordData, _currentVault.PrivateKey, _globalIV) },
-                UrlData = new EncryptedDataDtoCreation { CryptedData =CryptoHelper.Chiffrer(entrie.UrlData, _currentVault.PrivateKey, _globalIV) },
-                CommentData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.CommentData, _currentVault.PrivateKey, _globalIV) }
+                IsDesactivated = false,
+                    NameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.NameData, _currentVault.PrivateKey, _globalIV), Iv = CryptoHelper.AesHelper.GenerateRandomBytes(16), Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                    UserNameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UserNameData, _currentVault.PrivateKey, _globalIV), Iv = CryptoHelper.AesHelper.GenerateRandomBytes(16), Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                    PasswordData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.PasswordData, _currentVault.PrivateKey, _globalIV), Iv = CryptoHelper.AesHelper.GenerateRandomBytes(16), Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                    UrlData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UrlData, _currentVault.PrivateKey, _globalIV), Iv = CryptoHelper.AesHelper.GenerateRandomBytes(16), Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                    CommentData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.CommentData, _currentVault.PrivateKey, _globalIV), Iv = CryptoHelper.AesHelper.GenerateRandomBytes(16), Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) }
             };
             isEdit = true;
 
@@ -176,9 +178,7 @@
         {
             _errorVisible = true;
             _errorMessage = $"Erreur: {ex.Message}";
-        }
-        
-      
+        }   
     }
     
     private void UpdateCurrentEntrieToApi(EntrieUncryptedDto entrie)
@@ -199,7 +199,7 @@
         _showEntryForm = true;
     }
     
-    private void close()
+    private void Close()
     {
         isEdit = false;
         StateHasChanged();

@@ -36,7 +36,7 @@ public partial class EntrieDialog : ComponentBase
     public string comment { get; set; }
     
     public EntrieDto EntrieDto { get; set; }
-    public EntrieUncryptedDto UncryptedEntrieDto { get; set; }
+    public EntrieUncryptedDto EntrieUncryptedDto { get; set; }
     public EntrieDtoCreation EntrieDtoCreation { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -58,20 +58,32 @@ public partial class EntrieDialog : ComponentBase
 
     public async void Close()
     {
-        CloseCallback.InvokeAsync();
+      await CloseCallback.InvokeAsync();
     }
     
     public async void  Update()
     {
-        UpdateCallback.InvokeAsync(UncryptedEntrieDto);
+
+        await UpdateCallback.InvokeAsync(EntrieUncryptedDto);
     }
-    
-    public void Create()
+
+
+
+    public async void Create()
     {
-        // todo affetcer les valleurs du form dans le DTO cration 
-        
-        
-        CreateCallback.InvokeAsync(UncryptedEntrieDto);
+        EntrieUncryptedDto = new EntrieUncryptedDto
+        {
+            NameData = name,
+            UserNameData = username,
+            UrlData = url,
+            PasswordData = password,
+            CommentData = comment,
+            IsDesactivated = desactivated,
+            VaultId = CurrentVault
+        };
+
+        // Invoking the CreateCallback with the newly created EntrieUncryptedDto
+        await CreateCallback.InvokeAsync(EntrieUncryptedDto);
     }
     
 }

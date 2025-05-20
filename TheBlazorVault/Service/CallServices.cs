@@ -101,17 +101,29 @@ namespace TheBlazorVault.Service
 
 
         #endregion
-        
+
         #region For Entries
 
+        public Task<HttpResponseMessage> AddEntryAsync(int vaultId, EntrieDtoCreation entrieDtoCreation)
+           => downstreamApi.CallApiForUserAsync(
+               "EntraIDAuthWebAPI",
+               o =>
+               {
+                   o.HttpMethod = "POST";
+                   o.RelativePath = $"api/vault/{vaultId}/entries";
+                   o.CustomizeHttpRequestMessage = msg =>
+                   {
+                       msg.Content = JsonContent.Create(entrieDtoCreation);
+                   };
+               });
 
         // je veut crée une entrée
-        public async Task<HttpResponseMessage> AddEntryAsync(int vaultId, EntrieDtoCreation entrieDtoCreation)
+        public async Task<HttpResponseMessage> AddEntryAsync2(int vaultId, EntrieDtoCreation entrieDtoCreation)
         {
             var json = JsonSerializer.Serialize(entrieDtoCreation);
             var client = new HttpClient();
             
-            var response = await client.PostAsync($"api/vaults/{vaultId}/entries", new StringContent(json, Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync($"api/vault/{vaultId}/entries", new StringContent(json, Encoding.UTF8, "application/json"));
             Console.WriteLine(response);
             HttpResponseMessage test = new HttpResponseMessage();
             return test;

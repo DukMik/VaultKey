@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Remove="Components\Pages\Counter.razor" />
       <Content Remove="Components\Pages\Error.razor" />
       <Content Remove="Components\Pages\Index.razor" />
       <Content Remove="Components\Pages\Weather.razor" />

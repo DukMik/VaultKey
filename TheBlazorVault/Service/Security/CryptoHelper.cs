@@ -43,4 +43,18 @@ class CryptoHelper
             return sr.ReadToEnd();
         }
     }
+
+    public static class AesHelper
+    {
+        // Génère un tableau de bytes aléatoire de la taille spécifiée (par exemple 16 pour IV, 32 pour une clé AES-256)
+        public static byte[] GenerateRandomBytes(int length)
+        {
+            byte[] bytes = new byte[length];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(bytes);
+            }
+            return bytes;
+        }
+    }
 }
