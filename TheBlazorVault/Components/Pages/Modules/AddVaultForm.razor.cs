@@ -6,6 +6,12 @@ namespace TheBlazorVault.Components.Pages.Modules;
 
 public partial class AddVaultForm : ComponentBase
 {
+    private static byte[] GenerateRandomBytes(int length)
+    {
+        var bytes = new byte[length];
+        System.Security.Cryptography.RandomNumberGenerator.Fill(bytes);
+        return bytes;
+    }
     [Inject]private IJSRuntime IjsRuntime { get; set; } = default!;
     private VaultDtoCreation _newvault = new();
     
@@ -21,7 +27,8 @@ public partial class AddVaultForm : ComponentBase
     public async void CreateMethodCallback()
     {
         var passwordHash = await IjsRuntime.InvokeAsync<Byte[]>("sha256HashString", Password);
-        var saltHash = await IjsRuntime.InvokeAsync<Byte[]>("sha256HashString", Password);
+        var saltHash = GenerateRandomBytes(16);
+        saltHash = await IjsRuntime.InvokeAsync<Byte[]>("sha256HashString", Password);
 
         var newVault = new VaultDtoCreation()
         {
