@@ -55,25 +55,3 @@ else
 
 <AddVaultForm CreateVaultCallback="CreateVaultAsync"></AddVaultForm> <!--il y a un problème de taille qui empeche son affichage-->
 
-@* $1$ ----------  Script JS (inchangé) ---------- #1# *@
-@* <script> *@
-@* const toHex = bytes => [...bytes].map(b => ('0'+b.toString(16)).slice(-2)).join(''); *@
-@* *@
-@* window.vaultCrypto = { *@
-@*   generate: async () => { *@
-@*     const salt = crypto.getRandomValues(new Uint8Array(16)); *@
-@*     document.getElementById('salt').value = toHex(salt); *@
-@* *@
-@*     const hashBuf = await crypto.subtle.digest('SHA-256', salt); *@
-@*     document.getElementById('keyHash').value = toHex(new Uint8Array(hashBuf)); *@
-@* *@
-@*     const { privateKey } = await crypto.subtle.generateKey( *@
-@*         { name:'RSA-OAEP', modulusLength:2048, *@
-@*           publicExponent:new Uint8Array([1,0,1]), hash:'SHA-256' }, *@
-@*         true, ['decrypt']); *@
-@*     const pkcs8 = await crypto.subtle.exportKey('pkcs8', privateKey); *@
-@*     document.getElementById('privateKey').value = *@
-@*         btoa(String.fromCharCode(...new Uint8Array(pkcs8))); *@
-@*   } *@
-@* }; *@
-@* </script> *@

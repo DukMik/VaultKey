@@ -9,8 +9,7 @@ namespace TheBlazorVault.Components.Pages.Modules;
 public partial class EntrieDialog : ComponentBase
 {
     [Parameter]
-    public EntrieDto? EntrieUpdate { get; set; } //=>passe en EntrieDtoCreation par la suite avec le password en param
-    [Parameter]
+    public EntrieUncryptedDto? EntrieUpdate { get; set; } 
     public int CurrentVault { get; set; } = default ;
     
     [Parameter]
@@ -45,7 +44,18 @@ public partial class EntrieDialog : ComponentBase
         {
             try
             {
-                //password = Encoding.UTF8.GetString(EntrieUpdate.NameData.CryptedData); // c'est ici que je déchiffre les données 
+                if (IsCreateOrIsEdit == "Edit" && EntrieUpdate != null)
+                {                 
+
+                    // get le password via l'API 
+                    password = EntrieUpdate.PasswordData;
+                    name = EntrieUpdate.NameData;
+                    username = EntrieUpdate.UserNameData;
+                    url = EntrieUpdate.UrlData;
+                    comment = EntrieUpdate.CommentData;
+                    desactivated = EntrieUpdate.IsDesactivated;
+                }
+                StateHasChanged();
                 base.OnAfterRender(firstRender);
             }
             catch (Exception e)
@@ -63,7 +73,6 @@ public partial class EntrieDialog : ComponentBase
     
     public async void  Update()
     {
-
         await UpdateCallback.InvokeAsync(EntrieUncryptedDto);
     }
 

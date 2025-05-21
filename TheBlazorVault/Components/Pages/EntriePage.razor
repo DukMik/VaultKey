@@ -51,7 +51,7 @@
 <div>
     @if (isEdit)
     {
-        <EntrieDialog CurrentVault="CurrentVaultId" CloseCallback="Close" UpdateCallback="UpdateCurrentEntrieToApi" CreateCallback="CreateNewEntrieToApi" IsCreateOrIsEdit=@typemodal></EntrieDialog>
+        <EntrieDialog EntrieUpdate="_currentUncryptedEntrie" CloseCallback="Close" UpdateCallback="UpdateCurrentEntrieToApi" CreateCallback="CreateNewEntrieToApi" IsCreateOrIsEdit=@typemodal></EntrieDialog>
     }
 </div>
 }
@@ -59,7 +59,7 @@
 @code {
     [Parameter] public int CurrentVaultId {  get; set; }
 
-    private List<EntrieDto> _entries = new();
+    private List<EntrieDto> _entries = new(); //CurrentVault="CurrentVaultId"
     private List<EntrieUncryptedDto> _entriesUncrypted = new();
     private VaultDto _currentVault = new VaultDto();
 
@@ -141,8 +141,7 @@
     private async void CreateNewEntrieToApi(EntrieUncryptedDto entrie)
     {
         try
-        {            
-            
+        {                  
             // n'est utilie que la première fois ensuite tout les IV seront le mêmes 
             if (_globalIV== null)
             {
@@ -153,11 +152,11 @@
             EntrieDtoCreation entrieDtoCreation = new EntrieDtoCreation
             {
                 IsDesactivated = false,
-                    NameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.NameData, _currentVault.PrivateKey, _globalIV), Iv = CryptoHelper.AesHelper.GenerateRandomBytes(16), Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
-                    UserNameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UserNameData, _currentVault.PrivateKey, _globalIV), Iv = CryptoHelper.AesHelper.GenerateRandomBytes(16), Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
-                    PasswordData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.PasswordData, _currentVault.PrivateKey, _globalIV), Iv = CryptoHelper.AesHelper.GenerateRandomBytes(16), Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
-                    UrlData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UrlData, _currentVault.PrivateKey, _globalIV), Iv = CryptoHelper.AesHelper.GenerateRandomBytes(16), Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
-                    CommentData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.CommentData, _currentVault.PrivateKey, _globalIV), Iv = CryptoHelper.AesHelper.GenerateRandomBytes(16), Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) }
+                NameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.NameData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                UserNameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UserNameData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                PasswordData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.PasswordData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                UrlData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UrlData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                CommentData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.CommentData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) }
             };
             isEdit = true;
 

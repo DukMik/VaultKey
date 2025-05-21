@@ -105,29 +105,17 @@ namespace TheBlazorVault.Service
         #region For Entries
 
         public Task<HttpResponseMessage> AddEntryAsync(int vaultId, EntrieDtoCreation entrieDtoCreation)
-           => downstreamApi.CallApiForUserAsync(
-               "EntraIDAuthWebAPI",
-               o =>
-               {
-                   o.HttpMethod = "POST";
-                   o.RelativePath = $"api/vault/{vaultId}/entries";
-                   o.CustomizeHttpRequestMessage = msg =>
-                   {
-                       msg.Content = JsonContent.Create(entrieDtoCreation);
-                   };
-               });
-
-        // je veut crée une entrée
-        public async Task<HttpResponseMessage> AddEntryAsync2(int vaultId, EntrieDtoCreation entrieDtoCreation)
-        {
-            var json = JsonSerializer.Serialize(entrieDtoCreation);
-            var client = new HttpClient();
-            
-            var response = await client.PostAsync($"api/vault/{vaultId}/entries", new StringContent(json, Encoding.UTF8, "application/json"));
-            Console.WriteLine(response);
-            HttpResponseMessage test = new HttpResponseMessage();
-            return test;
-        }
+            => downstreamApi.CallApiForUserAsync(
+                "EntraIDAuthWebAPI",
+                o =>
+                {
+                    o.HttpMethod = "POST";
+                    o.RelativePath = $"api/vault/{vaultId}/entries";
+                    o.CustomizeHttpRequestMessage = msg =>
+                    {
+                        msg.Content = JsonContent.Create(entrieDtoCreation);
+                    };
+                });       
 
         public async Task<List<EntrieDto>> GetEntriesAsync(int vaultId)
         {
@@ -141,13 +129,46 @@ namespace TheBlazorVault.Service
 
             return _entriesDtos;
         }
+
+        public async Task<List<EntrieDto>> GetEntriePasswordAsync(int EntrieId)
+        {
+            _entriesDtos = await downstreamApi.CallApiForUserAsync<List<EntrieDto>>(
+                "EntraIDAuthWebAPI",
+                options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = $"/api/vault/{EntrieId}/entries";
+                }) ?? [];
+
+            return _entriesDtos;
+        }
+
+
+        // est ce que j'update ?
+        public Task<HttpResponseMessage> UpdateEntryAsync(int id, VaultDtoActivation vaultDtoActivation)
+            => downstreamApi.CallApiForUserAsync(
+                "EntraIDAuthWebAPI",
+                o =>
+                {
+                    o.HttpMethod = "PATCH";
+                    o.RelativePath = $"api/Vault/{id}/activation";
+                    o.CustomizeHttpRequestMessage = msg =>
+                    {
+                        msg.Content = JsonContent.Create(vaultDtoActivation);
+                    };
+                });
+
+
         #endregion
     }
 
 
-    public class UserIdDto
-    {
-        public int Value { get; set; }
-    }
+
+
+
+    //public class UserIdDto
+    //{
+    //    public int Value { get; set; }
+    //}
 }
 
