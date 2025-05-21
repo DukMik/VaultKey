@@ -25,12 +25,12 @@ namespace TheBlazorVault.Service
         
         // récupérations des vault via la downstream api 
         // plus gourmand que l'appelle normal de l'api (de toute façon le user est contoler au controler de l'api)'
-        public async Task<List<VaultDto>> GetVaultsAsync(int UserId)
+        public async Task<List<VaultDto>> GetVaultsAsync()
         {
             _vaultsDtos = await downstreamApi.CallApiForUserAsync<List<VaultDto>>("EntraIDAuthWebAPI", options =>
                 {
                     options.HttpMethod = "GET";
-                    options.RelativePath = $"api/Users/vaults/{UserId}";
+                    options.RelativePath = $"api/Users/vaults";
                 }) ?? [];
             
             return _vaultsDtos ;
@@ -101,13 +101,13 @@ namespace TheBlazorVault.Service
 
 
 
-        public Task<HttpResponseMessage> CanEnterVaultAsync(int id,Byte vaultPassword)
+        public Task<HttpResponseMessage> CanEnterVaultAsync(int id,Byte[] vaultPassword)
             => downstreamApi.CallApiForUserAsync(
                 "EntraIDAuthWebAPI",
                 o =>
                 {
                     o.HttpMethod = "POST";
-                    o.RelativePath = "api/vault/{id}/canEnter";
+                    o.RelativePath = $"api/vault/{id}/canEnter";
                     o.CustomizeHttpRequestMessage = msg =>
                     {
                         msg.Content = JsonContent.Create(vaultPassword);

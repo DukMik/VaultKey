@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -58,7 +58,8 @@ public partial class VaultsPage
                     return;
                 }
 
-                _vaults = await CallServices.GetVaultsAsync(userId.Value);
+                _vaults = await CallServices.GetVaultsAsync();
+                
                 StateHasChanged();
             }
         }
@@ -99,6 +100,7 @@ public partial class VaultsPage
             {
                 _errorMessage = $"Erreur {resp.StatusCode} : " + await resp.Content.ReadAsStringAsync();
             }
+            Navigation.NavigateTo("/vaults", true);
         }
         catch (Exception e)
         {
@@ -110,17 +112,38 @@ public partial class VaultsPage
     /* ------------  entrer dans un vault  ------------ */
     private async void EnterVault(Byte[] hashPassword)
     {
-        // Récupère l'IdUser depuis l'API (base de données)
-        var userId = await CallServices.GetCurrentUserIdAsync();        
-        
-        if (userId == null || userId.Value != _currentVault.UserId)
+        try
         {
-            Navigation.NavigateTo("/unauthorized");
-            return;
-        }
+            HttpResponseMessage response = await CallServices.CanEnterVaultAsync(_currentVault.IdVault, hashPassword);
 
-        // Navigation vers EntriePage avec l'ID du vault en paramètre
-        Navigation.NavigateTo($"/entries/{_currentVault.IdVault}");
+            if (response.IsSuccessStatusCode)
+            {
+                var resultJson = await response.Content.ReadAsStringAsync();
+                bool canEnter = bool.Parse(resultJson);
+
+                if (canEnter)
+                {
+                    // Navigation vers la page des entrées si autorisé
+                    Navigation.NavigateTo($"/entries/{_currentVault.IdVault}");
+                }
+                else
+                {
+                    // Affiche page non autorisé si mot de passe incorrect
+                    Navigation.NavigateTo("/vaults");
+                    return;
+                }
+            }
+            else
+            {
+                Navigation.NavigateTo("/vaults");
+                return;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }   
     
     

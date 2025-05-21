@@ -18,10 +18,10 @@ public class Vault
     public DateTime DateCreated { get; set; }
 
     [MaxLength(255)]
-    public string KeyHash { get; set; } = string.Empty;
+    public byte[] KeyHash { get; set; } = Array.Empty<byte>();
 
     [MaxLength(255)]
-    public string Salt { get; set; } = string.Empty;
+    public byte[] Salt { get; set; } = Array.Empty<byte>();
 
     public byte[] PrivateKey { get; set; } = Array.Empty<byte>();
 

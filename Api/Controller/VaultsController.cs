@@ -85,8 +85,8 @@ namespace Api.Controller
         /// <summary>
         /// Modifie le nom et les informations de chiffrement d'un vault existant.
         /// </summary>
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateVault(int id, [FromBody] VaultDtoUpdate vaultDto)
+        [HttpPut("{vaultId}")]
+        public async Task<IActionResult> UpdateVault(int vaultId, [FromBody] VaultDtoUpdate vaultDto)
         {
             var userId = _userService.CurrentUserId;
             if (userId == 0)
@@ -95,7 +95,7 @@ namespace Api.Controller
             var vaultEntity = await _context.Vault
                 .Include(v => v.Users)
                 .Include(v => v.Logs)
-                .FirstOrDefaultAsync(v => v.IdVault == id);
+                .FirstOrDefaultAsync(v => v.IdVault == vaultId);
             if (vaultEntity == null)
                 return NotFound();
             if (!vaultEntity.Users.Any(u => u.IdUser == userId))
@@ -124,25 +124,6 @@ namespace Api.Controller
 
             return Ok();
         }
-
-
-        [HttpPost("{id}/canEnter")]
-        public async Task<IActionResult> CabEnterVault(int vaultId, [FromBody] Byte[] dto)
-        {
-
-            var userId = _userService.CurrentUserId;
-            if (userId == 0)
-                return Unauthorized();
-
-            // Vérifie user ID si besoin (facultatif ici)
-            var vault = await _context.Vault.FirstOrDefaultAsync(v => v.IdVault == vaultId);
-            if (vault == null) return NotFound();
-
-            // Comparer le hash envoyé à celui en base
-            bool check = vault.KeyHash == dto;
-            return Ok(check);
-        }
-
 
         /// <summary>
         /// Active ou désactive un vault.
@@ -182,6 +163,28 @@ namespace Api.Controller
 
             return Ok();
         }
-    
+        
+        /// <summary>
+        /// permet de savoir si l'utilisateur peut se connecter ou non aux entries 
+        /// </summary>
+        /// <param name="vaultId"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        [HttpPost("{vaultId}/canEnter")]
+        public async Task<IActionResult> CabEnterVault(int vaultId, [FromBody] Byte[] dto)
+        {
+
+            var userId = _userService.CurrentUserId;
+            if (userId == 0)
+                return Unauthorized();
+
+            // Vérifie user ID si besoin (facultatif ici)
+            var vault = await _context.Vault.FirstOrDefaultAsync(v => v.IdVault == vaultId);
+            if (vault == null) return NotFound();
+
+            // Comparer le hash envoyé à celui en base
+            bool check = vault.KeyHash.SequenceEqual(dto);
+            return Ok(check);
+        }
     }
 }

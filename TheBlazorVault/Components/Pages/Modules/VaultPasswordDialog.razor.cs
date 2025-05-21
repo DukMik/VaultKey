@@ -6,7 +6,7 @@ namespace TheBlazorVault.Components.Pages.Modules;
 
 public partial class VaultPasswordDialog : ComponentBase
 {
-    [Inject] IJSRuntime IJSRuntime { get; set; } = default!;
+    [Inject] IJSRuntime IjsRuntime { get; set; } = default!;
 
     [Parameter]
     public EventCallback<int> CloseCallback { get; set; } = default!;
@@ -37,10 +37,11 @@ public partial class VaultPasswordDialog : ComponentBase
 
     protected async void Enter()
     {
-        // appler le JS pour hacher 
-        var passwordHash = await IJSRuntime.InvokeAsync<Byte[]>("sha256HashString", Password);
+        // todo : voir si de cette manière je ne communique pas avec le C# avant de passer dans le JS 
+        var passwordHash = await IjsRuntime.InvokeAsync<Byte[]>("sha256HashString", Password);
 
         EnterCallback.InvokeAsync(passwordHash);
+        Close();
     }
     
     protected async void Close()

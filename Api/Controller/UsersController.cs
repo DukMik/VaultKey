@@ -81,8 +81,8 @@ namespace Api.Controller
         /// <summary>
         /// Récupère la liste des coffres (vaults) d’un utilisateur spécifié par son identifiant.
         /// </summary>
-        [HttpGet("vaults/{id}")]
-        public async Task<ActionResult<IEnumerable<VaultDto>>> GetVaultsForCurrentUser(int id)
+        [HttpGet("vaults")]
+        public async Task<ActionResult<IEnumerable<VaultDto>>> GetVaultsForCurrentUser()
         {
             var userId = _service.CurrentUserId;
 
@@ -90,15 +90,15 @@ namespace Api.Controller
                 return Unauthorized();
             
             var vaults = await _context.Vault
-                .Where(v => v.UserId == id && !v.IsDesactivated)
+                .Where(v => v.UserId == userId && !v.IsDesactivated)
                 .Select(v => new VaultDto
                 {
                     IdVault = v.IdVault,
                     UserId = v.UserId,
                     VaultName = v.VaultName,
                     DateCreated = v.DateCreated,
-                    KeyHash = v.KeyHash,
-                    Salt = v.Salt,
+                   // KeyHash = v.KeyHash,
+                   // Salt = v.Salt,
                     PrivateKey = v.PrivateKey,
                     IsDesactivated = v.IsDesactivated
                 })
@@ -108,7 +108,7 @@ namespace Api.Controller
         }
         
         /// <summary>
-        /// Récupère la liste des coffres (vaults) d’un utilisateur spécifié par son identifiant.
+        /// Récupère le coffre (vault) d’un utilisateur spécifié par son identifiant.
         /// </summary>
         [HttpGet("vault/{id}")]
         public async Task<ActionResult<VaultDto>> GetOneVaultForCurrentUser(int id)
@@ -126,8 +126,8 @@ namespace Api.Controller
                     UserId = v.UserId,
                     VaultName = v.VaultName,
                     DateCreated = v.DateCreated,
-                    KeyHash = v.KeyHash,
-                    Salt = v.Salt,
+                   //KeyHash = v.KeyHash,
+                    //Salt = v.Salt,
                     PrivateKey = v.PrivateKey,
                     IsDesactivated = v.IsDesactivated
                 })

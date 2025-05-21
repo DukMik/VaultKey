@@ -7,7 +7,13 @@
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
 
     // Convert the buffer to a byte array
-    return Array.from(new Uint8Array(hashBuffer));
+    const bytes = Array.from(new Uint8Array(hashBuffer));
+
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
 }
 
 
