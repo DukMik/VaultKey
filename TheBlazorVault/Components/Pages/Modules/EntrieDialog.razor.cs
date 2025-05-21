@@ -45,8 +45,7 @@ public partial class EntrieDialog : ComponentBase
             try
             {
                 if (IsCreateOrIsEdit == "Edit" && EntrieUpdate != null)
-                {                 
-
+                {  
                     // get le password via l'API 
                     password = EntrieUpdate.PasswordData;
                     name = EntrieUpdate.NameData;

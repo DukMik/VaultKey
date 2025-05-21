@@ -100,6 +100,21 @@ namespace TheBlazorVault.Service
                 });
 
 
+
+        public Task<HttpResponseMessage> CanEnterVaultAsync(int id,Byte vaultPassword)
+            => downstreamApi.CallApiForUserAsync(
+                "EntraIDAuthWebAPI",
+                o =>
+                {
+                    o.HttpMethod = "POST";
+                    o.RelativePath = "api/vault/{id}/canEnter";
+                    o.CustomizeHttpRequestMessage = msg =>
+                    {
+                        msg.Content = JsonContent.Create(vaultPassword);
+                    };
+                });
+
+
         #endregion
 
         #region For Entries
@@ -142,6 +157,11 @@ namespace TheBlazorVault.Service
 
             return _entriesDtos;
         }
+
+
+
+
+
 
 
         // est ce que j'update ?

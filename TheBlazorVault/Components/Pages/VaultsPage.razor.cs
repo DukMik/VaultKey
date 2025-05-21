@@ -5,6 +5,7 @@ using MudBlazor;
 using TheApiDto;
 using TheBlazorVault.Service;
 using TheBlazorVault.Components.Pages.Modules;
+using EntityFrameworkComm.EfModel.Models;
 
 namespace TheBlazorVault.Components.Pages;
 
@@ -27,7 +28,13 @@ public partial class VaultsPage
     private string?           _errorMessage;
 
     private VaultDtoCreation  _newVault = new VaultDtoCreation();
-    
+
+    private VaultDto _currentVault = new VaultDto();
+
+    public bool IsAtemptConnecting { get; set; } = false;
+
+
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         try
@@ -62,6 +69,13 @@ public partial class VaultsPage
         }
     }
     
+    private void OpenDialog(VaultDto clickedVault)
+    {
+        IsAtemptConnecting = true;
+        _currentVault = clickedVault;
+        StateHasChanged();
+    }
+    
     /* ------------  création d'un vault  ------------ */
     private async Task CreateVaultAsync(VaultDtoCreation vault)
     {
@@ -94,21 +108,20 @@ public partial class VaultsPage
     }
     
     /* ------------  entrer dans un vault  ------------ */
-    private async void EnterVault(VaultDto clickedVault)
+    private async void EnterVault(Byte[] hashPassword)
     {
         // Récupère l'IdUser depuis l'API (base de données)
-        var userId = await CallServices.GetCurrentUserIdAsync();
-        if (userId == null || userId.Value != clickedVault.UserId)
+        var userId = await CallServices.GetCurrentUserIdAsync();        
+        
+        if (userId == null || userId.Value != _currentVault.UserId)
         {
             Navigation.NavigateTo("/unauthorized");
             return;
         }
 
         // Navigation vers EntriePage avec l'ID du vault en paramètre
-        Navigation.NavigateTo($"/entries/{clickedVault.IdVault}");
-    }
-
-    
+        Navigation.NavigateTo($"/entries/{_currentVault.IdVault}");
+    }   
     
     
     /* ------------  desactiver un vault  ------------ */
@@ -143,5 +156,11 @@ public partial class VaultsPage
             Console.WriteLine(e);
             throw;
         }
+    }
+    
+    private void Close()
+    {
+        IsAtemptConnecting = false;
+        StateHasChanged();
     }
 }

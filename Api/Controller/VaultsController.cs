@@ -85,7 +85,6 @@ namespace Api.Controller
         /// <summary>
         /// Modifie le nom et les informations de chiffrement d'un vault existant.
         /// </summary>
-        [AllowAnonymous]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateVault(int id, [FromBody] VaultDtoUpdate vaultDto)
         {
@@ -125,12 +124,30 @@ namespace Api.Controller
 
             return Ok();
         }
-        
+
+
+        [HttpPost("{id}/canEnter")]
+        public async Task<IActionResult> CabEnterVault(int vaultId, [FromBody] Byte[] dto)
+        {
+
+            var userId = _userService.CurrentUserId;
+            if (userId == 0)
+                return Unauthorized();
+
+            // Vérifie user ID si besoin (facultatif ici)
+            var vault = await _context.Vault.FirstOrDefaultAsync(v => v.IdVault == vaultId);
+            if (vault == null) return NotFound();
+
+            // Comparer le hash envoyé à celui en base
+            bool check = vault.KeyHash == dto;
+            return Ok(check);
+        }
+
+
         /// <summary>
         /// Active ou désactive un vault.
         /// </summary>
         /// <remarks> Pourrait etre fait autrement </remarks>
-        [AllowAnonymous]
         [HttpPatch("{id}/activation")]
         public async Task<IActionResult> ToggleVaultActivation(int id, [FromBody] VaultDtoActivation activationDto)
         {
