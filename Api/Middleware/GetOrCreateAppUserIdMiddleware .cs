@@ -39,6 +39,8 @@ namespace Api.Middleware
                 // En cas d'exception, la réponse retourne une erreur 500.
                 // Optionnel : une journalisation de l'erreur peut être ajoutée ici.
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+                throw;
             }
         }
     }

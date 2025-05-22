@@ -19,16 +19,14 @@ namespace Api.Controller
     public class UsersController : ControllerBase
     {
         private readonly Context _context;
-        private readonly UserService _service;
+        private readonly UserService _userService;
+        private readonly AuthenticatorService _authenticatorService;
 
-        /// <summary>
-        /// Initialise une nouvelle instance de la classe <see cref="UsersController"/>.
-        /// </summary>
-        /// <param name="context">Contexte de base de données utilisé pour les opérations CRUD sur les utilisateurs.</param>
-        public UsersController(Context context, UserService userService)
+        public UsersController(Context context, UserService userService, AuthenticatorService authenticatorService)
         {
             _context = context;
-            _service = userService;
+            _userService = userService;
+            _authenticatorService = authenticatorService;
         }
 
         /// <summary>
@@ -59,7 +57,7 @@ namespace Api.Controller
         {  
             // 2. Recherchez l'utilisateur dans la base de données
             var user = await _context.User
-                .Where(u => u.IdUser == _service.CurrentUserId)
+                .Where(u => u.IdUser == _userService.CurrentUserId)
                 .Select(u => new UserDto
                 {
                     IdUser = u.IdUser,
@@ -84,7 +82,7 @@ namespace Api.Controller
         [HttpGet("vaults")]
         public async Task<ActionResult<IEnumerable<VaultDto>>> GetVaultsForCurrentUser()
         {
-            var userId = _service.CurrentUserId;
+            var userId = _userService.CurrentUserId;
 
             if (userId == int.MinValue)
                 return Unauthorized();
@@ -113,7 +111,7 @@ namespace Api.Controller
         [HttpGet("vault/{id}")]
         public async Task<ActionResult<VaultDto>> GetOneVaultForCurrentUser(int id)
         {
-            var userId = _service.CurrentUserId;
+            var userId = _userService.CurrentUserId;
 
             if (userId == int.MinValue)
                 return Unauthorized();
@@ -154,9 +152,21 @@ namespace Api.Controller
             }
 
             // Utilise le service pour obtenir ou créer l'ID interne
-            var appUserId = await _service.GetOrCreateAppUserIdAsync(externalUserId);
+            var appUserId = await _userService.GetOrCreateAppUserIdAsync(externalUserId);
 
             return Ok(appUserId);
+        }     
+
+        [HttpGet("IsConnectionValid/{vaultId}")]
+        public async Task<ActionResult<bool>> IsConnectionValid(int vaultId)
+        {
+            var userId = _userService.CurrentUserId;
+            if (userId == 0)
+                return Unauthorized();
+
+            // Wrap the synchronous call in Task.Run to make the method truly asynchronous
+            bool isValid = await Task.Run(() => _authenticatorService.IsConnectionValid(userId, vaultId));
+            return Ok(new { Value = isValid });
         }
     }
 }

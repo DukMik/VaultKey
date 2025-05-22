@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Identity.Abstractions;
+using MudBlazor;
 using TheApiDto;
 
 
@@ -23,18 +24,26 @@ namespace TheBlazorVault.Service
         
         #region For users
         
-        // récupérations des vault via la downstream api 
-        // plus gourmand que l'appelle normal de l'api (de toute façon le user est contoler au controler de l'api)'
+        
         public async Task<List<VaultDto>> GetVaultsAsync()
         {
-            _vaultsDtos = await downstreamApi.CallApiForUserAsync<List<VaultDto>>("EntraIDAuthWebAPI", options =>
+            try
+            {
+                _vaultsDtos = await downstreamApi.CallApiForUserAsync<List<VaultDto>>("EntraIDAuthWebAPI", options =>
                 {
                     options.HttpMethod = "GET";
                     options.RelativePath = $"api/Users/vaults";
                 }) ?? [];
+
+                return _vaultsDtos;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             
-            return _vaultsDtos ;
         }
+
         public async Task<VaultDto> GetOneVaultAsync(int VaultId)
         {
             var vaultDto = await downstreamApi.CallApiForUserAsync<VaultDto>("EntraIDAuthWebAPI", options =>
@@ -45,28 +54,27 @@ namespace TheBlazorVault.Service
 
             return vaultDto!;
         }
-        
-        
-        
-        // async obligatoir mais pourquoi ?
-        public async Task<int?> GetCurrentUserIdAsync()
+
+        public async Task<bool> IsConnectionValidAsync(int vaultId)
         {
-            var userDto = await downstreamApi.CallApiForUserAsync<UserDto>(
+            // Appel via DownstreamApi pour bénéficier de l'authentification et des jetons
+            var result = await downstreamApi.CallApiForUserAsync<BoolResult>(
                 "EntraIDAuthWebAPI",
                 options =>
                 {
                     options.HttpMethod = "GET";
-                    options.RelativePath = "api/Users/user"; // <-- corresponde au [HttpGet("user")]
+                    options.RelativePath = $"api/Users/IsConnectionValid/{vaultId}";
                 });
-            return userDto?.IdUser;
+            return result?.Value ?? false;
         }
+
         #endregion
-        
+
         #region For vaults
 
         // je veut crée un vault 
         // apelle directe de l'api dans downsrtream api ce qui est moins gourmands et moins risquer
-        
+
         // 1) Appel HTTP « brut » – plus léger, aucun jeton n’est ré‑émis côté client.
         public async Task<HttpResponseMessage> CreateVaultAsyncRest(VaultDtoCreation vaultDtoCreation)
             => await http.PostAsJsonAsync("api/vault", vaultDtoCreation);
@@ -184,7 +192,10 @@ namespace TheBlazorVault.Service
 
 
 
-
+    public class BoolResult
+    {
+        public bool Value { get; set; }
+    }
 
     //public class UserIdDto
     //{

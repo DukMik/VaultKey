@@ -17,13 +17,11 @@ namespace Api.Controller
     {
         private readonly Context _context;
         private readonly UserService _userService;
-        private readonly AuthenticatorService _authenticatorService;
 
-        public VaultController(Context context, UserService userService, AuthenticatorService authenticatorService)
+        public VaultController(Context context, UserService userService)
         {
             _context = context;
             _userService = userService;
-            _authenticatorService = authenticatorService;
         }
 
 #if DEBUG
@@ -186,13 +184,6 @@ namespace Api.Controller
 
             // Comparer le hash envoyé à celui en base
             bool check = vault.KeyHash.SequenceEqual(dto);
-
-            if (check)
-            {
-                // Enregistre la connexion en mémoire
-                _authenticatorService.RegisterConnection(userId, vaultId);
-            }
-
             return Ok(check);
         }
     }

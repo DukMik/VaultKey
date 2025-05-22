@@ -3,40 +3,64 @@ using Microsoft.AspNetCore.Components;
 using TheApiDto;
 using System.Security.Cryptography;
 using TheBlazorVault.Service;
+using Microsoft.JSInterop;
 
 namespace TheBlazorVault.Components.Pages.Modules;
 
 public partial class EntrieDialog : ComponentBase
 {
+    [Inject] CallServices CallServices { get; set; } = default!;
+    [Inject] private IJSRuntime IjsRuntime { get; set; } = default!;
+
     [Parameter]
-    public EntrieUncryptedDto? EntrieUpdate { get; set; } 
-    public int CurrentVault { get; set; } = default ;
-    
-    [Parameter]
-    public EventCallback<int> CloseCallback { get; set; } = default ;
-    
-    [Parameter]
-    public EventCallback<EntrieUncryptedDto> UpdateCallback { get; set; } = default ;
+    public EntrieUncryptedDto? EntrieUpdate { get; set; }
     
     [Parameter]
-    public EventCallback<EntrieUncryptedDto> CreateCallback { get; set; } = default ;
-    
+    public EventCallback<int> CloseCallback { get; set; } = default;
+
     [Parameter]
-    public string IsCreateOrIsEdit { get; set; } = default ;
-    
-    [Inject]
-    CallServices CallServices { get; set; } = default!;
-    
-    public bool desactivated { get; set; } = false;
-    public string password { get; set; }
-    public string name { get; set; }
-    public string username { get; set; }
-    public string url { get; set; }
-    public string comment { get; set; }
-    
-    public EntrieDto EntrieDto { get; set; }
-    public EntrieUncryptedDto EntrieUncryptedDto { get; set; }
-    public EntrieDtoCreation EntrieDtoCreation { get; set; }
+    public EventCallback<EntrieUncryptedDto> UpdateCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<EntrieUncryptedDto> CreateCallback { get; set; }
+
+    [Parameter]
+    public string IsCreateOrIsEdit { get; set; } = "";
+
+    public record MiniCrypt(byte[] cypher, byte[] iv, byte[] tag);
+
+    //public int CurrentVault { get; set; } = 0;
+    //public bool desactivated { get; set; } = false;
+    //public string password { get; set; } = "";
+    //public string name { get; set; } = "";
+    //public string username { get; set; } = "";
+    //public string url { get; set; } = "";
+    //public string comment { get; set; } = "";
+
+ 
+    public EntrieDto EntrieDto { get; set; } = new EntrieDto
+    {
+        NameData = new EncryptedDataDto(),
+        UserNameData = new EncryptedDataDto(),
+        UrlData = new EncryptedDataDto(),
+        CommentData = new EncryptedDataDto()
+    };
+
+    public EntrieUncryptedDto EntrieUncryptedDto { get; set; } = new EntrieUncryptedDto
+    {
+        NameData = "",
+        UserNameData = "",
+        UrlData = "",
+        CommentData = ""
+    };
+
+    public EntrieDtoCreation EntrieDtoCreation { get; set; } = new EntrieDtoCreation
+    {
+        NameData = new EncryptedDataDtoCreation(),
+        UserNameData = new EncryptedDataDtoCreation(),
+        UrlData = new EncryptedDataDtoCreation(),
+        CommentData = new EncryptedDataDtoCreation()
+    };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -45,7 +69,9 @@ public partial class EntrieDialog : ComponentBase
             try
             {
                 if (IsCreateOrIsEdit == "Edit" && EntrieUpdate != null)
-                {  
+                {
+                    // utiliser le décrypt 
+
                     // get le password via l'API 
                     password = EntrieUpdate.PasswordData;
                     name = EntrieUpdate.NameData;
@@ -55,7 +81,7 @@ public partial class EntrieDialog : ComponentBase
                     desactivated = EntrieUpdate.IsDesactivated;
                 }
                 StateHasChanged();
-                base.OnAfterRender(firstRender);
+                //base.OnAfterRender(firstRender);
             }
             catch (Exception e)
             {
@@ -67,21 +93,31 @@ public partial class EntrieDialog : ComponentBase
 
     public async void Close()
     {
-      await CloseCallback.InvokeAsync();
+        await CloseCallback.InvokeAsync();
     }
-    
-    public async void  Update()
+
+    public async void Update()
     {
         await UpdateCallback.InvokeAsync(EntrieUncryptedDto);
     }
 
-
-
     public async void Create()
     {
-        EntrieUncryptedDto = new EntrieUncryptedDto
+        MiniCrypt name = await IjsRuntime.InvokeAsync<MiniCrypt>("encrypt", ["name"]);
+        MiniCrypt username = await IjsRuntime.InvokeAsync<MiniCrypt>("encrypt", ["username"]);
+        MiniCrypt url = await IjsRuntime.InvokeAsync<MiniCrypt>("encrypt", ["url"]);
+        MiniCrypt password = await IjsRuntime.InvokeAsync<MiniCrypt>("encrypt", ["password"]);
+        MiniCrypt comment = await IjsRuntime.InvokeAsync<MiniCrypt>("encrypt", ["comment"]);
+
+
+
+
+        // a modifier walla 
+
+
+        EntrieUncryptedDto = new EntrieDtoCreation
         {
-            NameData = name,
+            NameData = new EncryptedDataDtoCreation() { Iv = name.iv, CryptedData = name.cypher,Tag = name.tag } ,
             UserNameData = username,
             UrlData = url,
             PasswordData = password,
@@ -93,5 +129,4 @@ public partial class EntrieDialog : ComponentBase
         // Invoking the CreateCallback with the newly created EntrieUncryptedDto
         await CreateCallback.InvokeAsync(EntrieUncryptedDto);
     }
-    
 }

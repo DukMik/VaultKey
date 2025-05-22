@@ -48,15 +48,7 @@ public partial class VaultsPage
                 {
                     Navigation.NavigateTo("authentication/login");
                     return;
-                }
-
-                // Récupère l'IdUser depuis l'API (base de données)
-                var userId = await CallServices.GetCurrentUserIdAsync();
-                if (userId == null)
-                {
-                    _errorMessage = "Impossible de récupérer l'identifiant utilisateur.";
-                    return;
-                }
+                }               
 
                 _vaults = await CallServices.GetVaultsAsync();
                 
@@ -108,45 +100,28 @@ public partial class VaultsPage
             throw;
         }
     }
-    
+
     /* ------------  entrer dans un vault  ------------ */
-    private async void EnterVault(Byte[] hashPassword)
+    private void EnterVault(Byte[] hashPassword)
     {
         try
         {
-            HttpResponseMessage response = await CallServices.CanEnterVaultAsync(_currentVault.IdVault, hashPassword);
 
-            if (response.IsSuccessStatusCode)
+            if (hashPassword != null)
             {
-                var resultJson = await response.Content.ReadAsStringAsync();
-                bool canEnter = bool.Parse(resultJson);
-
-                if (canEnter)
-                {
-                    // Navigation vers la page des entrées si autorisé
-                    Navigation.NavigateTo($"/entries/{_currentVault.IdVault}");
-                }
-                else
-                {
-                    // Affiche page non autorisé si mot de passe incorrect
-                    Navigation.NavigateTo("/vaults");
-                    return;
-                }
+                Navigation.NavigateTo($"/entries/{_currentVault.IdVault}");
             }
             else
-            {
-                Navigation.NavigateTo("/vaults");
-                return;
-            }
+                Navigation.NavigateTo("/vaults", true);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw;
         }
-    }   
-    
-    
+    }
+
+
     /* ------------  desactiver un vault  ------------ */
     private async Task DesactivateVault(VaultDto clickedVault)
     {

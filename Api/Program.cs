@@ -45,6 +45,7 @@ builder.Services.AddDbContextFactory<Context>(options =>
 builder.Services.AddScoped<UserRepositorie>();
 
 builder.Services.AddScoped<UserService>();
+builder.Services.AddSingleton<AuthenticatorService>();
 
 
 // Add services to the container.

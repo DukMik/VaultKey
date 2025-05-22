@@ -21,11 +21,13 @@ namespace Api.Controllers
     {
         private readonly Context _dbContext;
         private readonly UserService _userService;
+        private readonly AuthenticatorService _authenticatorService;
 
-        public EntrieController(Context dbContext, UserService userService)
+        public EntrieController(Context context, UserService userService, AuthenticatorService authenticatorService)
         {
-            _dbContext = dbContext;
+            _dbContext = context;
             _userService = userService;
+            _authenticatorService = authenticatorService;
         }
 
 #if DEBUG
@@ -42,6 +44,9 @@ namespace Api.Controllers
             var userId = _userService.CurrentUserId;
             if (userId == 0)
                 return Unauthorized();
+
+            if (!_authenticatorService.IsConnectionValid(userId, vaultId))
+                return Unauthorized("Session expirée, veuillez vous reconnecter au vault.");
 
             // 2. Vérifier que le vault appartient à l'utilisateur
             var vault = await _dbContext.Vault

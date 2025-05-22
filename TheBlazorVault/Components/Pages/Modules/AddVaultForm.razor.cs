@@ -5,13 +5,7 @@ using TheApiDto;
 namespace TheBlazorVault.Components.Pages.Modules;
 
 public partial class AddVaultForm : ComponentBase
-{
-    private static byte[] GenerateRandomBytes(int length)
-    {
-        var bytes = new byte[length];
-        System.Security.Cryptography.RandomNumberGenerator.Fill(bytes);
-        return bytes;
-    }
+{ 
     [Inject]private IJSRuntime IjsRuntime { get; set; } = default!;
     private VaultDtoCreation _newvault = new();
     
@@ -26,15 +20,14 @@ public partial class AddVaultForm : ComponentBase
     
     public async void CreateMethodCallback()
     {
-        var passwordHash = await IjsRuntime.InvokeAsync<Byte[]>("sha256HashString", Password);
-        var saltHash = GenerateRandomBytes(16);
-        saltHash = await IjsRuntime.InvokeAsync<Byte[]>("sha256HashString", Password);
-
+        var passwordHash = await IjsRuntime.InvokeAsync<Byte[]>("getAndHashPassword");
+        var salt = await IjsRuntime.InvokeAsync<Byte[]>("generateSalt");  
+        
         var newVault = new VaultDtoCreation()
         {
             VaultName = Name,
             KeyHash = passwordHash,
-            Salt = saltHash,
+            Salt = salt,
             PrivateKey = Array.Empty<byte>()
         };
         

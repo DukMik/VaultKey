@@ -1,17 +1,23 @@
 ﻿using Microsoft.AspNetCore.Components;
 using TheApiDto;
 using Microsoft.JSInterop;
+using TheBlazorVault.Service;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace TheBlazorVault.Components.Pages.Modules;
 
 public partial class VaultPasswordDialog : ComponentBase
+    
 {
+   
+
     [Inject] IJSRuntime IjsRuntime { get; set; } = default!;
+    [Inject] CallServices CallServices { get; set; } = null!;
 
     [Parameter]
-    public EventCallback<int> CloseCallback { get; set; } = default!;
+    public EventCallback<int> CloseCallback { get; set; }
     [Parameter]
-    public EventCallback<Byte[]> EnterCallback { get; set; } = default!;
+    public EventCallback<byte[]> EnterCallback { get; set; }
 
     [Parameter]
     public VaultDto CurrentVault { get; set; } = new VaultDto();
@@ -37,15 +43,33 @@ public partial class VaultPasswordDialog : ComponentBase
 
     protected async void Enter()
     {
-        // todo : voir si de cette manière je ne communique pas avec le C# avant de passer dans le JS 
-        var passwordHash = await IjsRuntime.InvokeAsync<Byte[]>("sha256HashString", Password);
+        
+        var passwordHash = await IjsRuntime.InvokeAsync<Byte[]>("getAndHashPassword");
 
-        EnterCallback.InvokeAsync(passwordHash);
-        Close();
+        HttpResponseMessage response = await CallServices.CanEnterVaultAsync(CurrentVault.IdVault, passwordHash);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var resultJson = await response.Content.ReadAsStringAsync();
+            bool canEnter = bool.Parse(resultJson);
+            if (canEnter)
+            {
+                var localKey = await IjsRuntime.InvokeAsync<Byte[]>("deriveKey");
+                  
+              
+                await EnterCallback.InvokeAsync(passwordHash);
+
+                Close();
+            }
+            else
+            {
+                Close();
+            }
+        }      
     }
     
     protected async void Close()
     {
-        CloseCallback.InvokeAsync();
+        await CloseCallback.InvokeAsync();
     }
 }

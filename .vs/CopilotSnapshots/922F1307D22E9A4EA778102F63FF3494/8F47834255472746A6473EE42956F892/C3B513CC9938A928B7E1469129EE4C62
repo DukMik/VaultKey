@@ -4,7 +4,7 @@
 @using TheBlazorVault.Components.Pages.Modules
 @using MudBlazor
 @inject CallServices CallServices
-@inject IDialogService DialogService 
+@inject IDialogService DialogService
 
 
 @rendermode InteractiveServer
@@ -59,9 +59,6 @@
 @code {
     [Parameter] public int CurrentVaultId {  get; set; }
 
-    [Inject]
-    private NavigationManager Navigation { get; set; } = default!;
-
     private List<EntrieDto> _entries = new(); //CurrentVault="CurrentVaultId"
     private List<EntrieUncryptedDto> _entriesUncrypted = new();
     private VaultDto _currentVault = new VaultDto();
@@ -71,10 +68,10 @@
 
     private bool _showEntryForm = false;
     private bool _isNewEntry = true;
-    // private bool _formIsValid = false;
-    private MudForm _form = new MudForm();
+    private bool _formIsValid = false;
+    private MudForm _form;
     private bool isEdit;
-    private string typemodal = "";
+    private string typemodal;
 
 
     private EntrieDtoCreation _currentEntrieCreation = new();
@@ -87,7 +84,7 @@
     };
     private EntrieUncryptedDto _currentUncryptedEntrie = new EntrieUncryptedDto();
 
-    private byte[] _globalIV = Array.Empty<byte>();
+    private byte[] _globalIV;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -97,8 +94,16 @@
             {
                 _entries = await GettingAll(CurrentVaultId);
 
-
-
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    // Redirige vers la page des vaults si la session est expirée
+                    NavigationManager.NavigateTo("/vaults");
+                    return;
+                }
+                if (_entries.Count() > 0)
+                {
+                    _globalIV =_entries?.FirstOrDefault().NameData.Iv;
+                }
                 _currentVault = await CallServices.GetOneVaultAsync(CurrentVaultId);
 
                 _entriesUncrypted.Clear();
@@ -132,20 +137,12 @@
         return await CallServices.GetEntriesAsync(currentVaultId);
     }
 
-    private async void OpenDialog(string typeButton, EntrieUncryptedDto entrie)
+    private void OpenDialog(string typeButton, EntrieUncryptedDto entrie)
     {
-        var isValid = await CallServices.IsConnectionValidAsync(CurrentVaultId);
-        var isValidBool = Convert.ToBoolean(isValid);
-        
-        if (isValidBool)
-        {
-            isEdit = true;
-            typemodal = typeButton;
-            _currentUncryptedEntrie = entrie;
-            StateHasChanged();
-        } 
-        else 
-            Navigation.NavigateTo("/vaults", true);
+        isEdit = true;
+        typemodal = typeButton;
+        _currentUncryptedEntrie = entrie; 
+        StateHasChanged();
     } 
 
     private async void CreateNewEntrieToApi(EntrieUncryptedDto entrie)
@@ -208,7 +205,12 @@
         _showEntryForm = true;
     }
     
-   
+    private void Close()
+    {
+        isEdit = false;
+        StateHasChanged();
+    }
+    
     
     private async Task SaveEntry()
     {
@@ -245,9 +247,6 @@
         _showEntryForm = false;
     }
 
-    private void Close()
-    {
-        isEdit = false;
-        StateHasChanged();
-    }
+   
+
 }
