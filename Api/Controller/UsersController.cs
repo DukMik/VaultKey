@@ -95,8 +95,8 @@ namespace Api.Controller
                     UserId = v.UserId,
                     VaultName = v.VaultName,
                     DateCreated = v.DateCreated,
-                   // KeyHash = v.KeyHash,
-                   // Salt = v.Salt,
+                    KeyHash = v.KeyHash,
+                    Salt = v.Salt,
                     PrivateKey = v.PrivateKey,
                     IsDesactivated = v.IsDesactivated
                 })

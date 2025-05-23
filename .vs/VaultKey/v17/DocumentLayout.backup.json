@@ -7,24 +7,28 @@
       "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\components\\pages\\modules\\vaultpassworddialog.razor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\components\\pages\\modules\\vaultpassworddialog.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\components\\pages\\modules\\vaultpassworddialog.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\components\\pages\\vaultspage.razor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\components\\pages\\vaultspage.razor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\wwwroot\\js\\cryptohelper.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\wwwroot\\js\\cryptohelper.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\components\\pages\\vaultspage.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\components\\pages\\vaultspage.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theblazorvault\\components\\pages\\modules\\addvaultform.razor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7D552F3E-B6DC-448B-9122-7B98F65D9A63}|TheBlazorVault\\TheBlazorVault.csproj|solutionrelative:theblazorvault\\components\\pages\\modules\\addvaultform.razor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3BB30E69-EFCA-4AED-8A3C-806E292650E4}|TheApiDto\\TheApiDto.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\theapidto\\vaultdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3BB30E69-EFCA-4AED-8A3C-806E292650E4}|TheApiDto\\TheApiDto.csproj|solutionrelative:theapidto\\vaultdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{046D5AF1-83C4-4342-9AC8-455D2599A525}|Api\\Api.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\api\\controller\\vaultscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{046D5AF1-83C4-4342-9AC8-455D2599A525}|Api\\Api.csproj|solutionrelative:api\\controller\\vaultscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{046D5AF1-83C4-4342-9AC8-455D2599A525}|Api\\Api.csproj|c:\\data\\projets\\\u00E9cole\\vaultkey\\api\\controller\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{046D5AF1-83C4-4342-9AC8-455D2599A525}|Api\\Api.csproj|solutionrelative:api\\controller\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,8 +38,22 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 9,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "VaultsController.cs",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\Api\\Controller\\VaultsController.cs",
+              "RelativeDocumentMoniker": "Api\\Controller\\VaultsController.cs",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\Api\\Controller\\VaultsController.cs",
+              "RelativeToolTip": "Api\\Controller\\VaultsController.cs",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAowCAAAABHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-23T08:37:04.334Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
@@ -50,41 +68,67 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "App.razor",
-              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\App.razor",
-              "RelativeDocumentMoniker": "TheBlazorVault\\Components\\App.razor",
-              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\App.razor",
-              "RelativeToolTip": "TheBlazorVault\\Components\\App.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-05-23T00:37:09.499Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "VaultPasswordDialog.razor",
-              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\Modules\\VaultPasswordDialog.razor",
-              "RelativeDocumentMoniker": "TheBlazorVault\\Components\\Pages\\Modules\\VaultPasswordDialog.razor",
-              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\Modules\\VaultPasswordDialog.razor",
-              "RelativeToolTip": "TheBlazorVault\\Components\\Pages\\Modules\\VaultPasswordDialog.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA1AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-05-23T00:33:54.093Z",
+              "DocumentIndex": 6,
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\Api\\Controller\\UsersController.cs",
+              "RelativeDocumentMoniker": "Api\\Controller\\UsersController.cs",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\Api\\Controller\\UsersController.cs",
+              "RelativeToolTip": "Api\\Controller\\UsersController.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAwwFMAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-23T08:37:40.17Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "cryptoHelper.js",
-              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\wwwroot\\JS\\cryptoHelper.js",
-              "RelativeDocumentMoniker": "TheBlazorVault\\wwwroot\\JS\\cryptoHelper.js",
-              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\wwwroot\\JS\\cryptoHelper.js",
-              "RelativeToolTip": "TheBlazorVault\\wwwroot\\JS\\cryptoHelper.js",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAAwEAAAAACAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-05-23T00:18:46.614Z",
+              "Title": "VaultDto.cs",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheApiDto\\VaultDto.cs",
+              "RelativeDocumentMoniker": "TheApiDto\\VaultDto.cs",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheApiDto\\VaultDto.cs",
+              "RelativeToolTip": "TheApiDto\\VaultDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAYAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-23T08:34:11.07Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AddVaultForm.razor.cs",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\Modules\\AddVaultForm.razor.cs",
+              "RelativeDocumentMoniker": "TheBlazorVault\\Components\\Pages\\Modules\\AddVaultForm.razor.cs",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\Modules\\AddVaultForm.razor.cs",
+              "RelativeToolTip": "TheBlazorVault\\Components\\Pages\\Modules\\AddVaultForm.razor.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAowBcAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-23T08:27:04.005Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "VaultsPage.razor",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\VaultsPage.razor",
+              "RelativeDocumentMoniker": "TheBlazorVault\\Components\\Pages\\VaultsPage.razor",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\VaultsPage.razor",
+              "RelativeToolTip": "TheBlazorVault\\Components\\Pages\\VaultsPage.razor",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAUwDIAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-23T08:26:20.75Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "VaultsPage.razor.cs",
+              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\VaultsPage.razor.cs",
+              "RelativeDocumentMoniker": "TheBlazorVault\\Components\\Pages\\VaultsPage.razor.cs",
+              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\VaultsPage.razor.cs",
+              "RelativeToolTip": "TheBlazorVault\\Components\\Pages\\VaultsPage.razor.cs",
+              "ViewState": "AgIAAIQAAAAAAAAAAAAmwEIAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-23T08:25:41.272Z",
               "EditorCaption": ""
             },
             {
@@ -95,35 +139,9 @@
               "RelativeDocumentMoniker": "TheBlazorVault\\Components\\Pages\\Modules\\VaultPasswordDialog.razor.cs",
               "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\Modules\\VaultPasswordDialog.razor.cs",
               "RelativeToolTip": "TheBlazorVault\\Components\\Pages\\Modules\\VaultPasswordDialog.razor.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAuwB8AAAANAAAAAAAAAA==",
+              "ViewState": "AgIAADMAAAAAAAAAAAAYwDwAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-23T00:18:08.469Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "VaultsPage.razor.cs",
-              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\VaultsPage.razor.cs",
-              "RelativeDocumentMoniker": "TheBlazorVault\\Components\\Pages\\VaultsPage.razor.cs",
-              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\VaultsPage.razor.cs",
-              "RelativeToolTip": "TheBlazorVault\\Components\\Pages\\VaultsPage.razor.cs",
-              "ViewState": "AgIAAC0AAAAAAAAAAAAmwEEAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-23T00:18:03.343Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "VaultsPage.razor",
-              "DocumentMoniker": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\VaultsPage.razor",
-              "RelativeDocumentMoniker": "TheBlazorVault\\Components\\Pages\\VaultsPage.razor",
-              "ToolTip": "C:\\Data\\Projets\\\u00E9cole\\VaultKey\\TheBlazorVault\\Components\\Pages\\VaultsPage.razor",
-              "RelativeToolTip": "TheBlazorVault\\Components\\Pages\\VaultsPage.razor",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-05-23T00:17:24.156Z",
+              "WhenOpened": "2025-05-23T08:02:59.453Z",
               "EditorCaption": ""
             }
           ]

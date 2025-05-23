@@ -22,15 +22,19 @@ public partial class VaultPasswordDialog : ComponentBase
     [Parameter]
     public VaultDto CurrentVault { get; set; } = new VaultDto();
     private string Password { get; set; } = "";
-    
-    
-    protected override Task OnAfterRenderAsync(bool firstRender)
+
+    //protected override void OnInitialized()
+    //{
+    //    base.OnInitialized();
+    //}
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         try
         {
             if (firstRender)
             {
-                
+                await base.OnAfterRenderAsync(firstRender);
             }
         }
         catch (Exception e)
@@ -38,13 +42,13 @@ public partial class VaultPasswordDialog : ComponentBase
             Console.WriteLine(e);
             throw;
         }
-        return base.OnAfterRenderAsync(firstRender);
+        
     }
 
     protected async void Enter()
     {
         
-        var passwordHash = await IjsRuntime.InvokeAsync<Byte[]>("getAndHashPassword"); // erreur atypique
+        var passwordHash = await IjsRuntime.InvokeAsync<byte[]>("getAndHashPassword"); // erreur atypique
 
         HttpResponseMessage response = await CallServices.CanEnterVaultAsync(CurrentVault.IdVault, passwordHash);
 
@@ -54,7 +58,7 @@ public partial class VaultPasswordDialog : ComponentBase
             bool canEnter = bool.Parse(resultJson);
             if (canEnter)
             {
-                var localKey = await IjsRuntime.InvokeAsync<Byte[]>("deriveKey");
+                await IjsRuntime.InvokeAsync<byte[]>("deriveKey", CurrentVault.Salt );
                   
               
                 await EnterCallback.InvokeAsync(passwordHash);

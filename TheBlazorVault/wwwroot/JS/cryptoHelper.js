@@ -1,39 +1,6 @@
-﻿//window.hashPassword = async function (str) {
-//    // Encode the string into a Uint8Array
-//    const encoder = new TextEncoder();
-//    const data = encoder.encode(str);
-
-//    // Use the SubtleCrypto API to hash the data with SHA-256
-//    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-
-//    // Convert the buffer to a byte array
-//    const bytes = Array.from(new Uint8Array(hashBuffer));
-
-//    let binary = '';
-//    for (let i = 0; i < bytes.length; i++) {
-//        binary += String.fromCharCode(bytes[i]);
-//    }
-//    return btoa(binary);
-//}
-
-//window.getAndHashPassword = async function () {
-//    const passwordElement = document.getElementById('password');
-//    if (!passwordElement || !passwordElement.value) {
-//        alert('Le mot de passe est obligatoire.');
-//        return;
-//    }
-
-//    const password = passwordElement.value;
-
-//    try {
-//        return await window.hashPassword(password);
-//    } catch (error) {
-//        console.error('Error hashing password:', error);
-//        return null;
-//    }
-//};
-
-
+﻿window.generateSalt = function () {
+    return window.crypto.getRandomValues(new Uint8Array(16));
+}
 
 window.hashPassword = async function (password) {
     const enc = new TextEncoder();
@@ -64,21 +31,10 @@ window.getAndHashPassword = async function () {
     }
 };
 
-
-let dotNetReference = null;
-
-window.initFormSubmission = function (dotNetRef) {
-    dotNetReference = dotNetRef;
-};
-
-window.generateSalt = function () {
-    return window.crypto.getRandomValues(new Uint8Array(16));
-}
-
 window.deriveKey = async function (salt) {
 
     const passwordElement = document.getElementById('coffrePassword');
-    if (!passwordElement!passwordElement.value) {
+    if (!passwordElement || !passwordElement.value) {
         alert('Le mot de passe est obligatoire.');
         return;
     }
@@ -112,7 +68,12 @@ window.deriveKey = async function (salt) {
     localStorage.setItem("derivedKey", JSON.stringify(exportedKey));
 }
 
-// ----------------------------------------------------------------------------------------
+
+let dotNetReference = null;
+
+window.initFormSubmission = function (dotNetRef) {
+    dotNetReference = dotNetRef;
+};
 
 
 
