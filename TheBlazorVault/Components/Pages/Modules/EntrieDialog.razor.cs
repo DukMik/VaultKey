@@ -12,17 +12,20 @@ public partial class EntrieDialog : ComponentBase
     [Inject] CallServices CallServices { get; set; } = default!;
     [Inject] private IJSRuntime IjsRuntime { get; set; } = default!;
 
+    // [Parameter]
+    // public EntrieUncryptedDto? EntrieUpdate { get; set; }
+
     [Parameter]
-    public EntrieUncryptedDto? EntrieUpdate { get; set; }
-    
+    public EntrieDto? EntrieUpdate { get; set; }
+
     [Parameter]
     public EventCallback<int> CloseCallback { get; set; } = default;
 
     [Parameter]
-    public EventCallback<EntrieUncryptedDto> UpdateCallback { get; set; }
+    public EventCallback<EntrieDto> UpdateCallback { get; set; }
 
     [Parameter]
-    public EventCallback<EntrieUncryptedDto> CreateCallback { get; set; }
+    public EventCallback<EntrieDtoCreation> CreateCallback { get; set; }
 
     [Parameter]
     public string IsCreateOrIsEdit { get; set; } = "";
@@ -46,13 +49,13 @@ public partial class EntrieDialog : ComponentBase
         CommentData = new EncryptedDataDto()
     };
 
-    public EntrieUncryptedDto EntrieUncryptedDto { get; set; } = new EntrieUncryptedDto
-    {
-        NameData = "",
-        UserNameData = "",
-        UrlData = "",
-        CommentData = ""
-    };
+    //public EntrieUncryptedDto EntrieUncryptedDto { get; set; } = new EntrieUncryptedDto
+    //{
+    //    NameData = "",
+    //    UserNameData = "",
+    //    UrlData = "",
+    //    CommentData = ""
+    //};
 
     public EntrieDtoCreation EntrieDtoCreation { get; set; } = new EntrieDtoCreation
     {
@@ -72,13 +75,13 @@ public partial class EntrieDialog : ComponentBase
                 {
                     // utiliser le décrypt 
 
-                    // get le password via l'API 
-                    password = EntrieUpdate.PasswordData;
-                    name = EntrieUpdate.NameData;
-                    username = EntrieUpdate.UserNameData;
-                    url = EntrieUpdate.UrlData;
-                    comment = EntrieUpdate.CommentData;
-                    desactivated = EntrieUpdate.IsDesactivated;
+                    // get le password via l'API + utiliser decrypt 
+                    //password = EntrieUpdate.PasswordData;
+                    //name = EntrieUpdate.NameData;
+                    //username = EntrieUpdate.UserNameData;
+                    //url = EntrieUpdate.UrlData;
+                    //comment = EntrieUpdate.CommentData;
+                    //desactivated = EntrieUpdate.IsDesactivated;
                 }
                 StateHasChanged();
                 //base.OnAfterRender(firstRender);
@@ -98,7 +101,7 @@ public partial class EntrieDialog : ComponentBase
 
     public async void Update()
     {
-        await UpdateCallback.InvokeAsync(EntrieUncryptedDto);
+        await UpdateCallback.InvokeAsync(EntrieDto);
     }
 
     public async void Create()
@@ -109,24 +112,16 @@ public partial class EntrieDialog : ComponentBase
         MiniCrypt password = await IjsRuntime.InvokeAsync<MiniCrypt>("encrypt", ["password"]);
         MiniCrypt comment = await IjsRuntime.InvokeAsync<MiniCrypt>("encrypt", ["comment"]);
 
-
-
-
-        // a modifier walla 
-
-
-        EntrieUncryptedDto = new EntrieDtoCreation
+        EntrieDtoCreation = new EntrieDtoCreation
         {
-            NameData = new EncryptedDataDtoCreation() { Iv = name.iv, CryptedData = name.cypher,Tag = name.tag } ,
-            UserNameData = username,
-            UrlData = url,
-            PasswordData = password,
-            CommentData = comment,
-            IsDesactivated = desactivated,
-            VaultId = CurrentVault
+            NameData = new EncryptedDataDtoCreation() { Iv = name.iv, CryptedData = name.cypher,Tag = name.tag },
+            UserNameData = new EncryptedDataDtoCreation() { Iv = username.iv, CryptedData = username.cypher, Tag = username.tag },
+            UrlData = new EncryptedDataDtoCreation() { Iv = url.iv, CryptedData = url.cypher, Tag = url.tag },
+            PasswordData = new EncryptedDataDtoCreation() { Iv = password.iv, CryptedData = password.cypher, Tag = password.tag },
+            CommentData = new EncryptedDataDtoCreation() { Iv = comment.iv, CryptedData = comment.cypher, Tag = comment.tag },
         };
 
         // Invoking the CreateCallback with the newly created EntrieUncryptedDto
-        await CreateCallback.InvokeAsync(EntrieUncryptedDto);
+        await CreateCallback.InvokeAsync(EntrieDtoCreation);
     }
 }

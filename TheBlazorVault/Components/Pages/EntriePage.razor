@@ -12,7 +12,7 @@
 <MudPaper Class="pa-4">
     <MudText Typo="Typo.h5">Liste des entrées du vault @CurrentVaultId</MudText>
 
-    <MudTable Items="_entriesUncrypted" Hover="true" Bordered="true" Striped="true">
+    <MudTable Items="_entries" Hover="true" Bordered="true" Striped="true">
         <HeaderContent>
             <MudTh>Id</MudTh>
             <MudTh>Créé</MudTh>
@@ -40,7 +40,7 @@
         </RowTemplate>
     </MudTable>
 
-    <MudButton Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create", _currentUncryptedEntrie))"> 
+    <MudButton Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create", _currentEntrie))"> 
         Ajouter une entrée
     </MudButton>
 
@@ -51,7 +51,7 @@
 <div>
     @if (isEdit)
     {
-        <EntrieDialog EntrieUpdate="_currentUncryptedEntrie" CloseCallback="Close" UpdateCallback="UpdateCurrentEntrieToApi" CreateCallback="CreateNewEntrieToApi" IsCreateOrIsEdit=@typemodal></EntrieDialog>
+        <EntrieDialog EntrieUpdate="_currentEntrie" CloseCallback="Close" UpdateCallback="UpdateCurrentEntrieToApi" CreateCallback="CreateNewEntrieToApi" IsCreateOrIsEdit=@typemodal></EntrieDialog>
     }
 </div>
 }
@@ -63,7 +63,7 @@
     private NavigationManager Navigation { get; set; } = default!;
 
     private List<EntrieDto> _entries = new(); //CurrentVault="CurrentVaultId"
-    private List<EntrieUncryptedDto> _entriesUncrypted = new();
+    //private List<EntrieDto> _entriesUncrypted = new();
     private VaultDto _currentVault = new VaultDto();
 
     private bool _errorVisible = false;
@@ -85,7 +85,7 @@
         UrlData = new EncryptedDataDto(),
         CommentData = new EncryptedDataDto()
     };
-    private EntrieUncryptedDto _currentUncryptedEntrie = new EntrieUncryptedDto();
+   // private EntrieUncryptedDto _currentUncryptedEntrie = new EntrieUncryptedDto();
 
     private byte[] _globalIV = Array.Empty<byte>();
 
@@ -101,21 +101,21 @@
 
                 _currentVault = await CallServices.GetOneVaultAsync(CurrentVaultId);
 
-                _entriesUncrypted.Clear();
+                _entries.Clear();
                 foreach (var entrie in _entries)
                 {
-                    var entryTemp = new EntrieUncryptedDto
+                    var entryTemp = new EntrieDto
                     {
                         IdEntrie = entrie.IdEntrie,
                         CreatedDate = entrie.CreatedDate,
                         UpdatedDate = entrie.UpdatedDate,
                         IsDesactivated = entrie.IsDesactivated,
-                        NameData = CryptoHelper.Dechiffrer(entrie.NameData.CryptedData, _currentVault.PrivateKey, entrie.NameData.Iv),
-                        UserNameData = CryptoHelper.Dechiffrer(entrie.UserNameData.CryptedData, _currentVault.PrivateKey, entrie.UserNameData.Iv),
-                        UrlData = CryptoHelper.Dechiffrer(entrie.UrlData.CryptedData, _currentVault.PrivateKey, entrie.UrlData.Iv),
-                        CommentData = CryptoHelper.Dechiffrer(entrie.CommentData.CryptedData, _currentVault.PrivateKey, entrie.CommentData.Iv)
+                            NameData = entrie.NameData, //CryptoHelper.Dechiffrer(entrie.NameData.CryptedData, _currentVault.PrivateKey, entrie.NameData.Iv),
+                            UserNameData = entrie.NameData, //entrie.NameData.CryptedDataCryptoHelper.Dechiffrer(entrie.UserNameData.CryptedData, _currentVault.PrivateKey, entrie.UserNameData.Iv),
+                            UrlData = entrie.NameData, //CryptoHelper.Dechiffrer(entrie.UrlData.CryptedData, _currentVault.PrivateKey, entrie.UrlData.Iv),
+                            CommentData = entrie.NameData,// CryptoHelper.Dechiffrer(entrie.CommentData.CryptedData, _currentVault.PrivateKey, entrie.CommentData.Iv)
                     };
-                    _entriesUncrypted.Add(entryTemp);
+                    _entries.Add(entryTemp);
                 }
                 StateHasChanged();
             }
@@ -132,7 +132,7 @@
         return await CallServices.GetEntriesAsync(currentVaultId);
     }
 
-    private async void OpenDialog(string typeButton, EntrieUncryptedDto entrie)
+    private async void OpenDialog(string typeButton, EntrieDto entrie)
     {
         var isValid = await CallServices.IsConnectionValidAsync(CurrentVaultId);
         var isValidBool = Convert.ToBoolean(isValid);
@@ -141,32 +141,28 @@
         {
             isEdit = true;
             typemodal = typeButton;
-            _currentUncryptedEntrie = entrie;
+            _currentEntrie = entrie;
             StateHasChanged();
         } 
         else 
             Navigation.NavigateTo("/vaults", true);
     } 
 
-    private async void CreateNewEntrieToApi(EntrieUncryptedDto entrie)
+    private async void CreateNewEntrieToApi(EntrieDtoCreation entrie)
     {
         try
-        {                  
-            // n'est utilie que la première fois ensuite tout les IV seront le mêmes 
-            if (_globalIV== null)
-            {
-                _globalIV = CryptoHelper.AesHelper.GenerateRandomBytes(16);
-            }
+        {             
+
 
             //je convertis les string en EncryptedDataDtoCreation
             EntrieDtoCreation entrieDtoCreation = new EntrieDtoCreation
             {
                 IsDesactivated = false,
-                NameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.NameData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
-                UserNameData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UserNameData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
-                PasswordData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.PasswordData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
-                UrlData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UrlData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
-                CommentData = new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.CommentData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) }
+                NameData = entrie.NameData, // new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.NameData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                UserNameData = entrie.UserNameData, //  new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UserNameData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                PasswordData = entrie.PasswordData, // new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.PasswordData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                UrlData = entrie.UrlData, // new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.UrlData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) },
+                CommentData = entrie.CommentData // new EncryptedDataDtoCreation { CryptedData = CryptoHelper.Chiffrer(entrie.CommentData, _currentVault.PrivateKey, _globalIV), Iv = _globalIV, Tag = CryptoHelper.AesHelper.GenerateRandomBytes(16) }
             };
             isEdit = true;
 
@@ -190,7 +186,7 @@
         }   
     }
     
-    private void UpdateCurrentEntrieToApi(EntrieUncryptedDto entrie)
+    private void UpdateCurrentEntrieToApi(EntrieDto entrie)
     {
         
         // todo convertir EntrieUncryptedDto en EntrieDtoCreation

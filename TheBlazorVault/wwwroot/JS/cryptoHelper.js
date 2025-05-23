@@ -1,23 +1,54 @@
-﻿window.hashPassword = async function (str) {
-    // Encode the string into a Uint8Array
-    const encoder = new TextEncoder();
-    const data = encoder.encode(str);
+﻿//window.hashPassword = async function (str) {
+//    // Encode the string into a Uint8Array
+//    const encoder = new TextEncoder();
+//    const data = encoder.encode(str);
 
-    // Use the SubtleCrypto API to hash the data with SHA-256
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+//    // Use the SubtleCrypto API to hash the data with SHA-256
+//    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
 
-    // Convert the buffer to a byte array
-    const bytes = Array.from(new Uint8Array(hashBuffer));
+//    // Convert the buffer to a byte array
+//    const bytes = Array.from(new Uint8Array(hashBuffer));
 
-    let binary = '';
-    for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binary);
-}
+//    let binary = '';
+//    for (let i = 0; i < bytes.length; i++) {
+//        binary += String.fromCharCode(bytes[i]);
+//    }
+//    return btoa(binary);
+//}
+
+//window.getAndHashPassword = async function () {
+//    const passwordElement = document.getElementById('password');
+//    if (!passwordElement || !passwordElement.value) {
+//        alert('Le mot de passe est obligatoire.');
+//        return;
+//    }
+
+//    const password = passwordElement.value;
+
+//    try {
+//        return await window.hashPassword(password);
+//    } catch (error) {
+//        console.error('Error hashing password:', error);
+//        return null;
+//    }
+//};
+
+
+
+window.hashPassword = async function (password) {
+    const enc = new TextEncoder();
+    const passwordData = enc.encode(password);
+
+    const hashBuffer = await window.crypto.subtle.digest(
+        'SHA-256',
+        passwordData
+    );
+
+    return new Uint8Array(hashBuffer);
+};
 
 window.getAndHashPassword = async function () {
-    const passwordElement = document.getElementById('password');
+    const passwordElement = document.getElementById('coffrePassword');
     if (!passwordElement || !passwordElement.value) {
         alert('Le mot de passe est obligatoire.');
         return;

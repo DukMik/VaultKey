@@ -44,7 +44,7 @@ public partial class VaultPasswordDialog : ComponentBase
     protected async void Enter()
     {
         
-        var passwordHash = await IjsRuntime.InvokeAsync<Byte[]>("getAndHashPassword");
+        var passwordHash = await IjsRuntime.InvokeAsync<Byte[]>("getAndHashPassword"); // erreur atypique
 
         HttpResponseMessage response = await CallServices.CanEnterVaultAsync(CurrentVault.IdVault, passwordHash);
 
