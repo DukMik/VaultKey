@@ -69,14 +69,11 @@ window.deriveKey = async function (salt) {
 }
 
 
-let dotNetReference = null;
+let coffreDotNetRef = null;
 
-window.initFormSubmission = function (dotNetRef) {
-    dotNetReference = dotNetRef;
-};
-
-
-
+window.setCoffreDotNetRef = function (dotNetRef) {
+    window.coffreDotNetRef = dotNetRef;
+}
 
 
 window.getInputValue = async function (inputId) {
@@ -91,6 +88,14 @@ window.getInputValue = async function (inputId) {
     }
 
     return element.value;
+}
+
+window.getDerivedKey = async function () {
+    const jsonKey = JSON.parse(localStorage.getItem("derivedKey"));
+    return await crypto.subtle.importKey('jwk', jsonKey, {
+        name: "AES-GCM",
+        length: 256
+    }, true, ["encrypt", "decrypt"]);
 }
 
 window.encrypt = async function (inputId) {
@@ -120,8 +125,35 @@ window.encrypt = async function (inputId) {
     };
 }
 
-/*
-window.decrypt = async function (cipherData, iv, tag) {
+window.addDataToTable = function (data) {
+    const { nom, nomUtilisateur, motDePasseIdentifiant, commentaire } = data;
+    const table = document.getElementById('coffreData');
+    if (!table) {
+        alert('Table not found.');
+        return;
+    }
+
+    const row = table.insertRow();
+    const cellNom = row.insertCell(0);
+    const cellNomUtilisateur = row.insertCell(1);
+    const cellMotDePasse = row.insertCell(2);
+    const cellCommentaire = row.insertCell(3);
+    cellNom.textContent = nom;
+    cellNomUtilisateur.textContent = nomUtilisateur;
+    cellMotDePasse.textContent = "************";
+    cellMotDePasse.style.cursor = "pointer";
+    cellMotDePasse.setAttribute("id", "motDePasse_" + motDePasseIdentifiant);
+    cellMotDePasse.onclick = function () {
+        if (window.coffreDotNetRef) {
+            window.coffreDotNetRef.invokeMethodAsync('GetPassword', motDePasseIdentifiant);
+        } else {
+            alert('Référence .NET non initialisée.');
+        }
+    };
+    cellCommentaire.textContent = commentaire;
+}
+
+window.decrypt = async function (cipherText, iv, tag) {
     const cipherTextArray = new Uint8Array(Object.values(cipherText));
     const ivArray = new Uint8Array(Object.values(iv));
     const authTagArray = new Uint8Array(Object.values(tag));
@@ -141,6 +173,34 @@ window.decrypt = async function (cipherData, iv, tag) {
 
     return decoder.decode(decryptedData);
 }
-*/
+
+window.decryptAndDisplay = async function (dataArray) {
+    for (const data of dataArray) {
+        const decryptedNom = await decrypt(data.nameData.cryptedData, data.nameData.iv, data.nameData.tag);
+        const decryptedNomUtilisateur = await decrypt(data.userNameData.cryptedData, data.userNameData.iv, data.userNameData.tag);
+        const decryptedCommentaire = await decrypt(data.commentData.cryptedData, data.commentData.iv, data.commentData.tag);
+
+        const entree = {
+            nom: decryptedNom,
+            nomUtilisateur: decryptedNomUtilisateur,
+            motDePasseIdentifiant: data.motDePasseIdentifiant,
+            commentaire: decryptedCommentaire
+        }
+
+        window.addDataToTable(entree);
+    }
+}
+
+window.getPassword = async function (cryptedPassword) {
+    const decryptedPassword = await decrypt(cryptedPassword.cypher, cryptedPassword.iv, cryptedPassword.tag);
+
+    navigator.clipboard.writeText(decryptedPassword).then(function () {
+        alert('Mot de passe copié dans le presse-papiers.');
+    }, function (err) {
+        console.error('Erreur lors de la copie dans le presse-papiers: ', err);
+    });
+
+    passwordElement.style.cursor = "pointer";
+}
 
 

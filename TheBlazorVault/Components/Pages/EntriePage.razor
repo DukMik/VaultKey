@@ -9,10 +9,10 @@
 
 @rendermode InteractiveServer
 
-<MudPaper Class="pa-4">
+@* <MudPaper Class="pa-4">
     <MudText Typo="Typo.h5">Liste des entrées du vault @CurrentVaultId</MudText>
 
-    <MudTable Items="_entries" Hover="true" Bordered="true" Striped="true">
+    <MudTable Items="_entries" Hover="true" Bordered="true" Striped="true" id="coffreData" >
         <HeaderContent>
             <MudTh>Id</MudTh>
             <MudTh>Créé</MudTh>
@@ -34,19 +34,33 @@
             <MudTd DataLabel="URL">@context.UrlData</MudTd>
             <MudTd DataLabel="Commentaire">@context.CommentData</MudTd>
             <MudTd>
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" 
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small"
                 OnClick="@(() => OpenDialog( "Edit", context))">Modifier</MudButton>
             </MudTd>
         </RowTemplate>
     </MudTable>
 
-    <MudButton Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create", _currentEntrie))"> 
+    <+ Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create", _currentEntrie))"> 
         Ajouter une entrée
     </MudButton>
 
     <MudAlert Severity="Severity.Error" Style="margin-top: 15px;" Dense="true" Elevation="0" @bind-Visible="_errorVisible">@_errorMessage</MudAlert>
-</MudPaper>
-
+</MudPaper> *@
+<div>
+    <table id="coffreData" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Nom d'utilisateur</th>
+                <th>Mot de passe</th>
+                <th>Commentaire</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
 
 <div>
     @if (isEdit)
@@ -54,17 +68,22 @@
         <EntrieDialog EntrieUpdate="_currentEntrie" CloseCallback="Close" UpdateCallback="UpdateCurrentEntrieToApi" CreateCallback="CreateNewEntrieToApi" IsCreateOrIsEdit=@typemodal></EntrieDialog>
     }
 </div>
-}
+
+
+
+@**@
 
 @code {
     [Parameter] public int CurrentVaultId {  get; set; }
 
-    [Inject]
-    private NavigationManager Navigation { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+    [Inject] private IJSRuntime IjsRuntime { get; set; } = default!;
 
     private List<EntrieDto> _entries = new(); //CurrentVault="CurrentVaultId"
     //private List<EntrieDto> _entriesUncrypted = new();
     private VaultDto _currentVault = new VaultDto();
+
+    private DotNetObjectReference<EntriePage>? dotNetRef;
 
     private bool _errorVisible = false;
     private string _errorMessage = "";
@@ -85,38 +104,32 @@
         UrlData = new EncryptedDataDto(),
         CommentData = new EncryptedDataDto()
     };
-   // private EntrieUncryptedDto _currentUncryptedEntrie = new EntrieUncryptedDto();
+    // private EntrieUncryptedDto _currentUncryptedEntrie = new EntrieUncryptedDto();
 
     private byte[] _globalIV = Array.Empty<byte>();
+
+    // protected override async Task OnInitializedAsync()
+    // {
+
+    //     dotNetRef = DotNetObjectReference.Create(this);
+    //     await IjsRuntime.InvokeVoidAsync("setCoffreDotNetRef", dotNetRef);
+    // }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         try
         {
+
+
             if (firstRender)
             {
-                _entries = await GettingAll(CurrentVaultId);
+                // _entries = await GettingAll(CurrentVaultId);
+                _entries = await CallServices.GetEntriesAsync(CurrentVaultId);
+                if (_entries != null)
+		 {
+                    await IjsRuntime.InvokeVoidAsync("decryptAndDisplay", _entries);
+	   	}
 
-
-
-                _currentVault = await CallServices.GetOneVaultAsync(CurrentVaultId);
-
-                _entries.Clear();
-                foreach (var entrie in _entries)
-                {
-                    var entryTemp = new EntrieDto
-                    {
-                        IdEntrie = entrie.IdEntrie,
-                        CreatedDate = entrie.CreatedDate,
-                        UpdatedDate = entrie.UpdatedDate,
-                        IsDesactivated = entrie.IsDesactivated,
-                            NameData = entrie.NameData, //CryptoHelper.Dechiffrer(entrie.NameData.CryptedData, _currentVault.PrivateKey, entrie.NameData.Iv),
-                            UserNameData = entrie.NameData, //entrie.NameData.CryptedDataCryptoHelper.Dechiffrer(entrie.UserNameData.CryptedData, _currentVault.PrivateKey, entrie.UserNameData.Iv),
-                            UrlData = entrie.NameData, //CryptoHelper.Dechiffrer(entrie.UrlData.CryptedData, _currentVault.PrivateKey, entrie.UrlData.Iv),
-                            CommentData = entrie.NameData,// CryptoHelper.Dechiffrer(entrie.CommentData.CryptedData, _currentVault.PrivateKey, entrie.CommentData.Iv)
-                    };
-                    _entries.Add(entryTemp);
-                }
                 StateHasChanged();
             }
         }
@@ -129,7 +142,26 @@
 
     private async Task<List<EntrieDto>> GettingAll(int currentVaultId)
     {
-        return await CallServices.GetEntriesAsync(currentVaultId);
+        List<EntrieDto> entryList = await CallServices.GetEntriesAsync(currentVaultId) ?? [];
+
+        foreach (var entrie in _entries)
+            {
+                var entryTemp = new EntrieDto
+                {
+                    IdEntrie = entrie.IdEntrie,
+                    VaultId = entrie.VaultId,
+                    CreatedDate = entrie.CreatedDate,
+                    UpdatedDate = entrie.UpdatedDate,
+                    IsDesactivated = entrie.IsDesactivated,
+                    NameData = entrie.NameData, //CryptoHelper.Dechiffrer(entrie.NameData.CryptedData, _currentVault.PrivateKey, entrie.NameData.Iv),
+                    UserNameData = entrie.NameData, //entrie.NameData.CryptedDataCryptoHelper.Dechiffrer(entrie.UserNameData.CryptedData, _currentVault.PrivateKey, entrie.UserNameData.Iv),
+                    UrlData = entrie.NameData, //CryptoHelper.Dechiffrer(entrie.UrlData.CryptedData, _currentVault.PrivateKey, entrie.UrlData.Iv),
+                    CommentData = entrie.NameData,// CryptoHelper.Dechiffrer(entrie.CommentData.CryptedData, _currentVault.PrivateKey, entrie.CommentData.Iv)
+                };
+            entryList.Add(entryTemp);
+            }
+
+        return entryList;
     }
 
     private async void OpenDialog(string typeButton, EntrieDto entrie)

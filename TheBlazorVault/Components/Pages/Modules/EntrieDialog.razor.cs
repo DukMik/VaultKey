@@ -9,7 +9,7 @@ namespace TheBlazorVault.Components.Pages.Modules;
 
 public partial class EntrieDialog : ComponentBase
 {
-    [Inject] CallServices CallServices { get; set; } = default!;
+    [Inject] private CallServices CallServices { get; set; } = default!;
     [Inject] private IJSRuntime IjsRuntime { get; set; } = default!;
 
     // [Parameter]
@@ -30,7 +30,7 @@ public partial class EntrieDialog : ComponentBase
     [Parameter]
     public string IsCreateOrIsEdit { get; set; } = "";
 
-    public record MiniCrypt(byte[] cypher, byte[] iv, byte[] tag);
+    public record MiniCrypt(byte[] cipherData, byte[] iv, byte[] authTag);
 
     //public int CurrentVault { get; set; } = 0;
     //public bool desactivated { get; set; } = false;
@@ -114,11 +114,11 @@ public partial class EntrieDialog : ComponentBase
 
         EntrieDtoCreation = new EntrieDtoCreation
         {
-            NameData = new EncryptedDataDtoCreation() { Iv = name.iv, CryptedData = name.cypher,Tag = name.tag },
-            UserNameData = new EncryptedDataDtoCreation() { Iv = username.iv, CryptedData = username.cypher, Tag = username.tag },
-            UrlData = new EncryptedDataDtoCreation() { Iv = url.iv, CryptedData = url.cypher, Tag = url.tag },
-            PasswordData = new EncryptedDataDtoCreation() { Iv = password.iv, CryptedData = password.cypher, Tag = password.tag },
-            CommentData = new EncryptedDataDtoCreation() { Iv = comment.iv, CryptedData = comment.cypher, Tag = comment.tag },
+            NameData = new EncryptedDataDtoCreation() { Iv = name.iv, CryptedData = name.cipherData, Tag = name.authTag },
+            UserNameData = new EncryptedDataDtoCreation() { Iv = username.iv, CryptedData = username.cipherData, Tag = username.authTag },
+            UrlData = new EncryptedDataDtoCreation() { Iv = url.iv, CryptedData = url.cipherData, Tag = url.authTag },
+            PasswordData = new EncryptedDataDtoCreation() { Iv = password.iv, CryptedData = password.cipherData, Tag = password.authTag },
+            CommentData = new EncryptedDataDtoCreation() { Iv = comment.iv, CryptedData = comment.cipherData, Tag = comment.authTag },
         };
 
         // Invoking the CreateCallback with the newly created EntrieUncryptedDto

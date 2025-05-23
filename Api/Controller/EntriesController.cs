@@ -44,10 +44,7 @@ namespace Api.Controllers
             var userId = _userService.CurrentUserId;
             if (userId == 0)
                 return Unauthorized();
-
-            if (!_authenticatorService.IsConnectionValid(userId, vaultId))
-                return Unauthorized("Session expirée, veuillez vous reconnecter au vault.");
-
+           
             // 2. Vérifier que le vault appartient à l'utilisateur
             var vault = await _dbContext.Vault
                 .Include(v => v.Users)
@@ -161,7 +158,6 @@ namespace Api.Controllers
                 var userNameData = await _dbContext.Set<EncryptedData>().FindAsync(e.UserNameDataId);
                 var urlData = await _dbContext.Set<EncryptedData>().FindAsync(e.UrlDataId);
                 var commentData = await _dbContext.Set<EncryptedData>().FindAsync(e.CommentDataId);
-// au moment ou je récupère les encrypted data j'ai déja le problème de "BOM"
                 result.Add(new EntrieDto
                 {
                     IdEntrie = e.IdEntrie,
