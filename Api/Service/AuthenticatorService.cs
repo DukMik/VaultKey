@@ -5,7 +5,7 @@ namespace Api.Service;
 public class AuthenticatorService 
 {
     // Durée de validité d'une connexion (ex: 30 minutes)
-    private static readonly TimeSpan ConnectionTimeout = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan ConnectionTimeout = TimeSpan.FromSeconds(60);
 
     // Structure pour stocker la connexion
     private record UserVaultConnection(int UserId, int VaultId, DateTime ConnectedAt);

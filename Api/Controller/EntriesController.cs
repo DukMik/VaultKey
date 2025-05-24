@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TheApiDto;
+﻿using TheApiDto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +6,7 @@ using Api.Service;
 using EntityFrameworkComm.EfModel.Context;
 using EntityFrameworkComm.EfModel.Models;
 
-namespace Api.Controllers
+namespace Api.Controller
 {
     [ApiController]
     [Route("api/vault/{vaultId}/entries")]
@@ -34,11 +30,9 @@ namespace Api.Controllers
         [AllowAnonymous]
 #endif
         [HttpPost]
-        public async Task<IActionResult> CreateEntrie(int vaultId, [FromBody] EntrieDtoCreation _)
+        public async Task<IActionResult> CreateEntrie(int vaultId, [FromBody] EntrieDtoCreation entrieDtoCreation)
         {
-            var entriedto = _;
-            var bytes = Convert.FromBase64String("MTIzNDU2Nzg5MDEyMzQ1Ng==");
-            Console.WriteLine(BitConverter.ToString(bytes));
+            var entriedto = entrieDtoCreation;
 
             // 1. Vérifier l'utilisateur connecté
             var userId = _userService.CurrentUserId;
@@ -51,6 +45,9 @@ namespace Api.Controllers
                 .FirstOrDefaultAsync(v => v.IdVault == vaultId);
             if (vault == null || !vault.Users.Any(u => u.IdUser == userId))
                 return Unauthorized();
+            
+            if (!_authenticatorService.IsConnectionValid(userId, vaultId))
+                return Unauthorized(new { message = "Votre session sur ce coffre a expiré. Veuillez vous reconnecter." });
 
             // 3. Créer l'entité Entrie (EF Core)
             var entry = new Entrie
@@ -145,6 +142,9 @@ namespace Api.Controllers
                 return NotFound();
             if (!vault.Users.Any(u => u.IdUser == userId))
                 return Unauthorized();
+            
+            if (!_authenticatorService.IsConnectionValid(userId, vaultId))
+                return Unauthorized(new { message = "Votre session sur ce coffre a expiré. Veuillez vous reconnecter." });
 
             // Récupérer les entrées
             var entries = await _dbContext.Set<Entrie>()

@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Identity.Abstractions;
 using MudBlazor;
@@ -15,9 +16,9 @@ namespace TheBlazorVault.Service
     /// </summary>
     /// <remarks>l'appelle via la downstream API est plus dangeureux car il fait sortir les information pour les réutiliser, en Blazor serveur ce n'est pas nécéssaire.</remarks>
     /// <param name="downstreamApi"></param>
-    public class CallServices(IDownstreamApi downstreamApi)
+    public class CallServices(IDownstreamApi downstreamApi, ISnackbar snackbar)
     {
-        
+        [Inject] private NavigationManager Navigation { get; set; } = default!;
         private List<VaultDto> _vaultsDtos = [];
         private List<EntrieDto> _entriesDtos = [];
         private readonly HttpClient http = new HttpClient();
@@ -142,15 +143,24 @@ namespace TheBlazorVault.Service
 
         public async Task<List<EntrieDto>> GetEntriesAsync(int vaultId)
         {
-            _entriesDtos = await downstreamApi.CallApiForUserAsync<List<EntrieDto>>(
-                "EntraIDAuthWebAPI",
-                options =>
-                {
-                    options.HttpMethod = "GET";
-                    options.RelativePath = $"/api/vault/{vaultId}/entries";
-                }) ?? [];
+            try
+            {
+                _entriesDtos = await downstreamApi.CallApiForUserAsync<List<EntrieDto>>(
+                    "EntraIDAuthWebAPI",
+                    options =>
+                    {
+                        options.HttpMethod = "GET";
+                        options.RelativePath = $"/api/vault/{vaultId}/entries";
+                    }) ?? [];
 
-            return _entriesDtos;
+                return _entriesDtos;
+            }
+            catch (Exception e)
+            {
+                
+                Console.WriteLine(e);
+                return [];
+            } 
         }
 
         public async Task<List<EntrieDto>> GetEntriePasswordAsync(int EntrieId)

@@ -16,12 +16,8 @@ public class Context : DbContext
 
     private void InitializeDbPath()
     {
-        //var folder = Environment.SpecialFolder.LocalApplicationData;
         var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        //var path = Environment.GetFolderPath(folder);
         DbPath = Path.Combine(baseDirectory, "KeyLock.db");
-        //DbPath = Path.Join(path, "blogging.db");
-        
         Console.WriteLine($"Le fichier sera créé à : {DbPath}");
     }
 
@@ -35,8 +31,6 @@ public class Context : DbContext
         InitializeDbPath();
     }
     
-    // The following configures EF to create a Sqlite database file in the
-    // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder options)
         => options.UseSqlite($"Data Source={DbPath}");
 }

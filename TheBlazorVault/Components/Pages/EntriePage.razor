@@ -40,12 +40,17 @@
         </RowTemplate>
     </MudTable>
 
-    <+ Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create", _currentEntrie))"> 
+    <MudButton Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create", _currentEntrie))"> 
         Ajouter une entrée
     </MudButton>
 
     <MudAlert Severity="Severity.Error" Style="margin-top: 15px;" Dense="true" Elevation="0" @bind-Visible="_errorVisible">@_errorMessage</MudAlert>
 </MudPaper> *@
+
+<MudButton Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create", _currentEntrie))"> 
+Ajouter une entrée
+</MudButton>
+
 <div>
     <table id="coffreData" class="table table-striped">
         <thead>
@@ -80,10 +85,10 @@
     [Inject] private IJSRuntime IjsRuntime { get; set; } = default!;
 
     private List<EntrieDto> _entries = new(); //CurrentVault="CurrentVaultId"
-    //private List<EntrieDto> _entriesUncrypted = new();
+   
     private VaultDto _currentVault = new VaultDto();
 
-    private DotNetObjectReference<EntriePage>? dotNetRef;
+
 
     private bool _errorVisible = false;
     private string _errorMessage = "";
@@ -119,17 +124,19 @@
     {
         try
         {
-
-
             if (firstRender)
             {
-                // _entries = await GettingAll(CurrentVaultId);
                 _entries = await CallServices.GetEntriesAsync(CurrentVaultId);
-                if (_entries != null)
-		 {
-                    await IjsRuntime.InvokeVoidAsync("decryptAndDisplay", _entries);
-	   	}
+            
+                var isValid = await CallServices.IsConnectionValidAsync(CurrentVaultId);
+                var isValidBool = Convert.ToBoolean(isValid);
 
+                if (!isValidBool)
+                {
+                    Navigation.NavigateTo("/vaults");
+                }
+                
+                await IjsRuntime.InvokeVoidAsync("decryptAndDisplay", _entries);
                 StateHasChanged();
             }
         }
@@ -142,9 +149,13 @@
 
     private async Task<List<EntrieDto>> GettingAll(int currentVaultId)
     {
-        List<EntrieDto> entryList = await CallServices.GetEntriesAsync(currentVaultId) ?? [];
+        try
+        {
+            List<EntrieDto> entryList;
 
-        foreach (var entrie in _entries)
+            entryList = await CallServices.GetEntriesAsync(currentVaultId);
+
+            foreach (var entrie in _entries)
             {
                 var entryTemp = new EntrieDto
                 {
@@ -153,15 +164,21 @@
                     CreatedDate = entrie.CreatedDate,
                     UpdatedDate = entrie.UpdatedDate,
                     IsDesactivated = entrie.IsDesactivated,
-                    NameData = entrie.NameData, //CryptoHelper.Dechiffrer(entrie.NameData.CryptedData, _currentVault.PrivateKey, entrie.NameData.Iv),
-                    UserNameData = entrie.NameData, //entrie.NameData.CryptedDataCryptoHelper.Dechiffrer(entrie.UserNameData.CryptedData, _currentVault.PrivateKey, entrie.UserNameData.Iv),
-                    UrlData = entrie.NameData, //CryptoHelper.Dechiffrer(entrie.UrlData.CryptedData, _currentVault.PrivateKey, entrie.UrlData.Iv),
-                    CommentData = entrie.NameData,// CryptoHelper.Dechiffrer(entrie.CommentData.CryptedData, _currentVault.PrivateKey, entrie.CommentData.Iv)
+                    NameData = entrie.NameData, 
+                    UserNameData = entrie.NameData, 
+                    UrlData = entrie.NameData, 
+                    CommentData = entrie.NameData,
                 };
-            entryList.Add(entryTemp);
+                entryList.Add(entryTemp);
             }
 
-        return entryList;
+            return entryList;
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e);
+            return [];
+        }
     }
 
     private async void OpenDialog(string typeButton, EntrieDto entrie)
@@ -183,9 +200,7 @@
     private async void CreateNewEntrieToApi(EntrieDtoCreation entrie)
     {
         try
-        {             
-
-
+        {        
             //je convertis les string en EncryptedDataDtoCreation
             EntrieDtoCreation entrieDtoCreation = new EntrieDtoCreation
             {

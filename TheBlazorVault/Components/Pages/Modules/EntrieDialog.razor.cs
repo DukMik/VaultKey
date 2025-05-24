@@ -123,5 +123,6 @@ public partial class EntrieDialog : ComponentBase
 
         // Invoking the CreateCallback with the newly created EntrieUncryptedDto
         await CreateCallback.InvokeAsync(EntrieDtoCreation);
+        Close();
     }
 }
