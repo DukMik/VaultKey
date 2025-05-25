@@ -65,7 +65,7 @@ public partial class EntrieDialog : ComponentBase
         CommentData = new EncryptedDataDtoCreation()
     };
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
@@ -90,8 +90,9 @@ public partial class EntrieDialog : ComponentBase
             {
                 Console.WriteLine(e);
                 throw;
-            }
+            }            
         }
+        return Task.CompletedTask;
     }
 
     public async void Close()

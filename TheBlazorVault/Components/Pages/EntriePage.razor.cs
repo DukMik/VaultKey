@@ -15,11 +15,8 @@ namespace TheBlazorVault.Components.Pages
 
         private List<EntrieDto> _entries = new();
 
-        private bool _errorVisible = false;
         private string _errorMessage = "";
 
-        private bool _showEntryForm = false;
-        private bool _isNewEntry = true;
         private MudForm _form = new MudForm();
         private bool isEdit;
         private string typemodal = "";
@@ -96,20 +93,19 @@ namespace TheBlazorVault.Components.Pages
 
                 var response = await CallServices.AddEntryAsync(CurrentVaultId, entrieDtoCreation);
                 if (response.IsSuccessStatusCode)
-                {
-                    _showEntryForm = false;
+                {                    
                     _entries = await CallServices.GetEntriesAsync(CurrentVaultId);
                 }
                 else
                 {
-                    _errorVisible = true;
                     _errorMessage = "Erreur lors de la création de l'entrée.";
                 }
                 StateHasChanged();
+                Navigation.NavigateTo("/vaults", true);
             }
             catch (Exception ex)
             {
-                _errorVisible = true;
+                //_errorVisible = true;
                 _errorMessage = $"Erreur: {ex.Message}";
             }   
         }
@@ -122,15 +118,15 @@ namespace TheBlazorVault.Components.Pages
         {
            
             
-            _isNewEntry = false;
-           // _currentEntrieCreation = new EntrieDtoCreation
-           // {
-           //     NameData = new EncryptedDataDtoCreation { CryptedData = entrie.NameData?.CryptedData },
-           //     UserNameData = new EncryptedDataDtoCreation { CryptedData = entrie.UserNameData?.CryptedData },
-           //     UrlData = new EncryptedDataDtoCreation { CryptedData = entrie.UrlData?.CryptedData },
-           //     CommentData = new EncryptedDataDtoCreation { CryptedData = entrie.CommentData?.CryptedData }
-           // };
-            _showEntryForm = true;
+            //_isNewEntry = false;
+            // _currentEntrieCreation = new EntrieDtoCreation
+            // {
+            //     NameData = new EncryptedDataDtoCreation { CryptedData = entrie.NameData?.CryptedData },
+            //     UserNameData = new EncryptedDataDtoCreation { CryptedData = entrie.UserNameData?.CryptedData },
+            //     UrlData = new EncryptedDataDtoCreation { CryptedData = entrie.UrlData?.CryptedData },
+            //     CommentData = new EncryptedDataDtoCreation { CryptedData = entrie.CommentData?.CryptedData }
+            // };
+            //_showEntryForm = true;
         }
         
         private void Close()

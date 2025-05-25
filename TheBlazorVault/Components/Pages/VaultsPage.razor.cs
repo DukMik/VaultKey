@@ -76,11 +76,8 @@ public partial class VaultsPage
         {
             _newVault = vault;
             _errorMessage = null;
-            // NewVault.UserId = _userId;
             _newVault.DateCreated = DateTime.UtcNow;
-
-            // les deux implémentations devrais fonctionner mais celui décommenter fonctionne pour sur  
-            // var resp = await CallServices.CreateVaultAsyncRest(NewVault);
+            
             var resp = await CallServices.CreateVaultAsync(vault);
 
             if (resp.IsSuccessStatusCode)
