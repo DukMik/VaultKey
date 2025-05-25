@@ -16,6 +16,7 @@ namespace Api.Controller
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]// S'assure que seul un utilisateur connecté peut accéder
     public class UsersController : ControllerBase
     {
         private readonly Context _context;
@@ -29,33 +30,10 @@ namespace Api.Controller
             _authenticatorService = authenticatorService;
         }
 
-        /// <summary>
-        /// Récupère la liste de tous les utilisateurs enregistrés.
-        /// </summary>
-        /// <returns>Une liste d’objets <see cref="UserDTO"/> contenant les informations des utilisateurs.</returns>
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
-        {
-            // Sélectionne et mappe les utilisateurs sur le DTO sans inclure les vaults et logs pour simplifier la réponse
-            var users = await _context.User
-                .Select(u => new UserDto
-                {
-                    IdUser = u.IdUser,
-                    EntraIdUser = u.EntraIdUser,
-                    Vaults = null, // Les coffres (vaults) ne sont pas inclus dans cette opération
-                    Logs = null // Les logs d’audit ne sont pas inclus dans cette opération
-                })
-                .ToListAsync();
-
-            return Ok(users);
-        }
-
-
         [HttpGet("user")]
-        [Authorize] // S'assure que seul un utilisateur connecté peut accéder
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {  
-            // 2. Recherchez l'utilisateur dans la base de données
+            
             var user = await _context.User
                 .Where(u => u.IdUser == _userService.CurrentUserId)
                 .Select(u => new UserDto
@@ -66,14 +44,46 @@ namespace Api.Controller
                     Logs = null
                 })
                 .FirstOrDefaultAsync();
-
-            // 3. Vérifie si l'utilisateur existe
+            
             if (user == null)
             {
                 return NotFound("Utilisateur non trouvé.");
             }
 
             return Ok(user);
+        }
+        
+        /// <summary>
+        /// Récupère l'identifiant interne (IdUser) de l'utilisateur actuellement connecté.
+        /// </summary>
+        [HttpGet("id")]
+        public async Task<ActionResult<int>> GetCurrentUserId()
+        {
+            // Récupère l'identifiant externe (OID ou sub) depuis les claims
+            var externalIdStr = User.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier")
+                                ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
+                                ?? User.FindFirstValue("sub");
+
+            if (string.IsNullOrEmpty(externalIdStr) || !Guid.TryParse(externalIdStr, out var externalUserId))
+            {
+                return Unauthorized("Impossible de déterminer l'identité externe de l'utilisateur.");
+            }
+
+            // Utilise le service pour obtenir ou créer l'ID interne
+            var appUserId = await _userService.GetOrCreateAppUserIdAsync(externalUserId);
+
+            return Ok(appUserId);
+        }     
+
+        [HttpGet("IsConnectionValid/{vaultId}")]
+        public async Task<ActionResult<bool>> IsConnectionValid(int vaultId)
+        {
+            var userId = _userService.CurrentUserId;
+            if (userId == 0)
+                return Unauthorized();
+            
+            bool isValid = await Task.Run(() => _authenticatorService.IsConnectionValid(userId, vaultId));
+            return Ok(new { Value = isValid });
         }
         
         /// <summary>
@@ -124,49 +134,14 @@ namespace Api.Controller
                     UserId = v.UserId,
                     VaultName = v.VaultName,
                     DateCreated = v.DateCreated,
-                   //KeyHash = v.KeyHash,
-                    //Salt = v.Salt,
+                    KeyHash = v.KeyHash,
+                    Salt = v.Salt,
                     PrivateKey = v.PrivateKey,
                     IsDesactivated = v.IsDesactivated
                 })
                 .FirstOrDefaultAsync();
 
             return Ok(vault);
-        }
-
-        /// <summary>
-        /// Récupère l'identifiant interne (IdUser) de l'utilisateur actuellement connecté.
-        /// </summary>
-        [HttpGet("id")]
-        [Authorize]
-        public async Task<ActionResult<int>> GetCurrentUserId()
-        {
-            // Récupère l'identifiant externe (OID ou sub) depuis les claims
-            var externalIdStr = User.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier")
-                                ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
-                                ?? User.FindFirstValue("sub");
-
-            if (string.IsNullOrEmpty(externalIdStr) || !Guid.TryParse(externalIdStr, out var externalUserId))
-            {
-                return Unauthorized("Impossible de déterminer l'identité externe de l'utilisateur.");
-            }
-
-            // Utilise le service pour obtenir ou créer l'ID interne
-            var appUserId = await _userService.GetOrCreateAppUserIdAsync(externalUserId);
-
-            return Ok(appUserId);
-        }     
-
-        [HttpGet("IsConnectionValid/{vaultId}")]
-        public async Task<ActionResult<bool>> IsConnectionValid(int vaultId)
-        {
-            var userId = _userService.CurrentUserId;
-            if (userId == 0)
-                return Unauthorized();
-
-            // Wrap the synchronous call in Task.Run to make the method truly asynchronous
-            bool isValid = await Task.Run(() => _authenticatorService.IsConnectionValid(userId, vaultId));
-            return Ok(new { Value = isValid });
         }
     }
 }

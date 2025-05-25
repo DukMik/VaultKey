@@ -33,13 +33,11 @@ namespace Api.Controller
         public async Task<IActionResult> CreateEntrie(int vaultId, [FromBody] EntrieDtoCreation entrieDtoCreation)
         {
             var entriedto = entrieDtoCreation;
-
-            // 1. Vérifier l'utilisateur connecté
+            
             var userId = _userService.CurrentUserId;
             if (userId == 0)
                 return Unauthorized();
-           
-            // 2. Vérifier que le vault appartient à l'utilisateur
+            
             var vault = await _dbContext.Vault
                 .Include(v => v.Users)
                 .FirstOrDefaultAsync(v => v.IdVault == vaultId);
@@ -47,23 +45,21 @@ namespace Api.Controller
                 return Unauthorized();
             
             if (!_authenticatorService.IsConnectionValid(userId, vaultId))
-                return Unauthorized(new { message = "Votre session sur ce coffre a expiré. Veuillez vous reconnecter." });
-
-            // 3. Créer l'entité Entrie (EF Core)
+                return Unauthorized();
+            
             var entry = new Entrie
             {
                 VaultId = vaultId,
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow,
                 IsDesactivated = entriedto.IsDesactivated,
-                Vault = null!, // Ne pas recharger le vault, la FK suffit
-                Logs = null!, // Ne pas recharger les logs, la FK suffit
+                Vault = null!,
+                Logs = null!,
                 EncryptedData = null!
             };
             _dbContext.Set<Entrie>().Add(entry);
             await _dbContext.SaveChangesAsync();
-
-            // 4. Créer les EncryptedData (EF Core)
+            
             var encryptedEntries = new List<EncryptedData>
             {
                 new EncryptedData
@@ -98,15 +94,13 @@ namespace Api.Controller
             _dbContext.Set<EncryptedData>().AddRange(encryptedEntries);
             await _dbContext.SaveChangesAsync();
 
-            // 5. Mettre à jour les clés étrangères dans Entrie
             entry.NameDataId = encryptedEntries[0].IdEncryptedData;
             entry.UserNameDataId = encryptedEntries[1].IdEncryptedData;
             entry.UrlDataId = encryptedEntries[2].IdEncryptedData;
             entry.CommentDataId = encryptedEntries[3].IdEncryptedData;
             entry.PasswordDataId = encryptedEntries[4].IdEncryptedData;
             await _dbContext.SaveChangesAsync();
-
-            // 6. Créer un log de création d'entrée
+            
             var logEntry = new Log
             {
                 ActionDate = DateTime.UtcNow,
@@ -116,7 +110,7 @@ namespace Api.Controller
                 VaultId = vaultId,
                 EntryId = entry.IdEntrie,
 
-                User = null! // Ne pas recharger l'utilisateur, la FK suffit'
+                User = null! 
             };
             _dbContext.Log.Add(logEntry);
             await _dbContext.SaveChangesAsync();
@@ -144,9 +138,8 @@ namespace Api.Controller
                 return Unauthorized();
             
             if (!_authenticatorService.IsConnectionValid(userId, vaultId))
-                return Unauthorized(new { message = "Votre session sur ce coffre a expiré. Veuillez vous reconnecter." });
-
-            // Récupérer les entrées
+                return Unauthorized();
+            
             var entries = await _dbContext.Set<Entrie>()
                 .Where(e => e.VaultId == vaultId)
                 .ToListAsync();

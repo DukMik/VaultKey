@@ -1,13 +1,6 @@
-﻿using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Identity.Abstractions;
-using MudBlazor;
 using TheApiDto;
-
-
 
 namespace TheBlazorVault.Service
 {
@@ -16,41 +9,32 @@ namespace TheBlazorVault.Service
     /// </summary>
     /// <remarks>l'appelle via la downstream API est plus dangeureux car il fait sortir les information pour les réutiliser, en Blazor serveur ce n'est pas nécéssaire.</remarks>
     /// <param name="downstreamApi"></param>
-    public class CallServices(IDownstreamApi downstreamApi, ISnackbar snackbar)
+    public class CallServices(IDownstreamApi downstreamApi)
     {
         [Inject] private NavigationManager Navigation { get; set; } = default!;
         private List<VaultDto> _vaultsDtos = [];
         private List<EntrieDto> _entriesDtos = [];
-        private readonly HttpClient http = new HttpClient();
         
         #region For users
         
         
         public async Task<List<VaultDto>> GetVaultsAsync()
         {
-            try
-            {
-                _vaultsDtos = await downstreamApi.CallApiForUserAsync<List<VaultDto>>("EntraIDAuthWebAPI", options =>
+            _vaultsDtos = await downstreamApi.CallApiForUserAsync<List<VaultDto>>("EntraIDAuthWebAPI", options =>
                 {
                     options.HttpMethod = "GET";
                     options.RelativePath = $"api/Users/vaults";
                 }) ?? [];
 
                 return _vaultsDtos;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            
         }
 
-        public async Task<VaultDto> GetOneVaultAsync(int VaultId)
+        public async Task<VaultDto> GetOneVaultAsync(int vaultId)
         {
             var vaultDto = await downstreamApi.CallApiForUserAsync<VaultDto>("EntraIDAuthWebAPI", options =>
             {
                 options.HttpMethod = "GET";
-                options.RelativePath = $"api/Users/vault/{VaultId}";
+                options.RelativePath = $"api/Users/vault/{vaultId}";
             });
 
             return vaultDto!;
@@ -74,14 +58,9 @@ namespace TheBlazorVault.Service
         #region For vaults
 
         // je veut crée un vault 
-        // apelle directe de l'api dans downsrtream api ce qui est moins gourmands et moins risquer
-
-        // 1) Appel HTTP « brut » – plus léger, aucun jeton n’est ré‑émis côté client.
-        public async Task<HttpResponseMessage> CreateVaultAsyncRest(VaultDtoCreation vaultDtoCreation)
-            => await http.PostAsJsonAsync("api/vault", vaultDtoCreation);
-
+       
         
-        // 2) Même chose mais via DownstreamApi – MSAL ajoute access‑token + gestion erreur AAD.
+      
         public Task<HttpResponseMessage> CreateVaultAsync(VaultDtoCreation vaultDtoCreation)
             => downstreamApi.CallApiForUserAsync(                    
                 "EntraIDAuthWebAPI",
@@ -163,14 +142,15 @@ namespace TheBlazorVault.Service
             } 
         }
 
-        public async Task<List<EntrieDto>> GetEntriePasswordAsync(int EntrieId)
+        
+        public async Task<List<EntrieDto>> GetEntriePasswordAsync(int entrieId)
         {
             _entriesDtos = await downstreamApi.CallApiForUserAsync<List<EntrieDto>>(
                 "EntraIDAuthWebAPI",
                 options =>
                 {
                     options.HttpMethod = "GET";
-                    options.RelativePath = $"/api/vault/{EntrieId}/entries";
+                    options.RelativePath = $"/api/vault/{entrieId}/entries";
                 }) ?? [];
 
             return _entriesDtos;
@@ -182,22 +162,22 @@ namespace TheBlazorVault.Service
 
 
 
-        // est ce que j'update ?
-        public Task<HttpResponseMessage> UpdateEntryAsync(int id, VaultDtoActivation vaultDtoActivation)
-            => downstreamApi.CallApiForUserAsync(
-                "EntraIDAuthWebAPI",
-                o =>
-                {
-                    o.HttpMethod = "PATCH";
-                    o.RelativePath = $"api/Vault/{id}/activation";
-                    o.CustomizeHttpRequestMessage = msg =>
-                    {
-                        msg.Content = JsonContent.Create(vaultDtoActivation);
-                    };
-                });
+  //     // est ce que j'update ?
+  //     public Task<HttpResponseMessage> UpdateEntryAsync(int id, VaultDtoActivation vaultDtoActivation)
+  //         => downstreamApi.CallApiForUserAsync(
+  //             "EntraIDAuthWebAPI",
+  //             o =>
+  //             {
+  //                 o.HttpMethod = "PATCH";
+  //                 o.RelativePath = $"api/Vault/{id}/activation";
+  //                 o.CustomizeHttpRequestMessage = msg =>
+  //                 {
+  //                     msg.Content = JsonContent.Create(vaultDtoActivation);
+  //                 };
+  //             });
 
 
-        #endregion
+      #endregion
     }
 
 
@@ -206,10 +186,5 @@ namespace TheBlazorVault.Service
     {
         public bool Value { get; set; }
     }
-
-    //public class UserIdDto
-    //{
-    //    public int Value { get; set; }
-    //}
 }
 

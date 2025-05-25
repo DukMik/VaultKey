@@ -10,8 +10,9 @@ namespace Api.Controller
 {
     [ApiController]
     [Route("api/[controller]")]
-#if !DEBUG
     [Authorize]
+#if DEBUG
+    [AllowAnonymous]
 #endif
     public class VaultController : ControllerBase
     {
@@ -26,13 +27,11 @@ namespace Api.Controller
             _authenticatorService = authenticatorService;
         }
 
-#if DEBUG
-        [AllowAnonymous]
-#endif
+
         [HttpPost]
         public async Task<IActionResult> CreateVault([FromBody] VaultDtoCreation vaultDto)
         {
-            // 1. Récupération de l'ID utilisateur
+            // 1. Récupération de l'ID utilisateur => ne pas faire confiance qu client 
             var userId = _userService.CurrentUserId;
             if (userId == 0)
                 return Unauthorized();
@@ -41,8 +40,7 @@ namespace Api.Controller
             var userEntity = await _context.User.FindAsync(userId);
             if (userEntity == null)
                 return Unauthorized();
-
-            // 3. Map DTO -> Entity
+            
             var vaultEntity = new Vault
             {
                 UserId = userEntity.IdUser,
@@ -51,21 +49,16 @@ namespace Api.Controller
                 KeyHash        = vaultDto.KeyHash,
                 Salt           = vaultDto.Salt,
                 PrivateKey     = vaultDto.PrivateKey,
-
-                // Initialiser les collections
                 Users   = new List<User>(),
                 Entries = new List<Entrie>(),
                 Logs    = new List<Log>()
             };
-
-            // 4. Lier le vault à l'utilisateur via la collection many-to-many
+           
             vaultEntity.Users.Add(userEntity);
-
-            // 5. Enregistrer le vault
+          
             _context.Vault.Add(vaultEntity);
             await _context.SaveChangesAsync();
-
-            // 6. Créer et lier le log
+           
             var logEntity = new Log
             {
                 ActionDate = DateTime.UtcNow,
@@ -73,7 +66,7 @@ namespace Api.Controller
                 Details    = $"Vault '{vaultEntity.VaultName}' créé.",
                 UserId     = userId,
                 VaultId    = vaultEntity.IdVault,
-                User       = null! // Ne pas recharger l'utilisateur, la FK suffit
+                User       = null!
             };
             vaultEntity.Logs.Add(logEntity);
 
@@ -130,7 +123,6 @@ namespace Api.Controller
         /// <summary>
         /// Active ou désactive un vault.
         /// </summary>
-        /// <remarks> Pourrait etre fait autrement </remarks>
         [HttpPatch("{id}/activation")]
         public async Task<IActionResult> ToggleVaultActivation(int id, [FromBody] VaultDtoActivation activationDto)
         {
@@ -173,23 +165,19 @@ namespace Api.Controller
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost("{vaultId}/canEnter")]
-        public async Task<IActionResult> CabEnterVault(int vaultId, [FromBody] Byte[] dto)
+        public async Task<IActionResult> CanEnterVault(int vaultId, [FromBody] Byte[] dto)
         {
-
             var userId = _userService.CurrentUserId;
             if (userId == 0)
                 return Unauthorized();
-
-            // Vérifie user ID si besoin (facultatif ici)
+            
             var vault = await _context.Vault.FirstOrDefaultAsync(v => v.IdVault == vaultId);
             if (vault == null) return NotFound();
 
-            // Comparer le hash envoyé à celui en base
             bool check = vault.KeyHash.SequenceEqual(dto);
 
             if (check)
             {
-                // Enregistre la connexion en mémoire
                 _authenticatorService.RegisterConnection(userId, vaultId);
             }
 
