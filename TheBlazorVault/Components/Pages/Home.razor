@@ -1,7 +1,5 @@
 ﻿@page "/"
 @rendermode InteractiveServer
-@inject AuthenticationStateProvider AuthStateProvider
-@inject NavigationManager NavigationManager
 
 
 <PageTitle>Home</PageTitle>
@@ -12,10 +10,9 @@
 </MudText>
 
 <!-- Bouton pour accéder aux Vaults -->
-<MudButton Color="Color.Primary" OnClick=navigue>
+<MudButton Color="Color.Primary" OnClick=Navigue>
   Accéder aux Vaults
 </MudButton>
-<!--<button @onclick="@(() => NavigationManager.NavigateTo("/vaults"))"> vide </button> -->
 
 <button onclick="@(()=>NavigationManager.NavigateTo("MicrosoftIdentity/Account/SignOut?postLogoutRedirectUri=/"))" ></button>
 
@@ -23,27 +20,4 @@
 <MudButton Color="Color.Secondary" OnClick="Logout">
   Se déconnecter
 </MudButton>
-
-@code {
-  private void Logout()
-  {
-    NavigationManager.NavigateTo(
-      "MicrosoftIdentity/Account/SignOut?postLogoutRedirectUri=/",
-      forceLoad: true // <-- obligatoire pour déclencher un "vrai" appel HTTP
-    );
-  }
-
-  private void navigue()
-  {
-    try
-    {
-        NavigationManager.NavigateTo("/vaults");
-    }
-    catch (Exception e)
-    {
-      Console.WriteLine(e);
-      throw;
-    }
-  }
-}
 

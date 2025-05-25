@@ -101,7 +101,7 @@ namespace TheBlazorVault.Components.Pages
                     _errorMessage = "Erreur lors de la création de l'entrée.";
                 }
                 StateHasChanged();
-                Navigation.NavigateTo("/vaults", true);
+                Navigation.NavigateTo($"/entries/{CurrentVaultId}", true);
             }
             catch (Exception ex)
             {

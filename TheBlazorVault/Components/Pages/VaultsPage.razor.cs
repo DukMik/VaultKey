@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
-using MudBlazor;
 using TheApiDto;
 using TheBlazorVault.Service;
-using TheBlazorVault.Components.Pages.Modules;
-using EntityFrameworkComm.EfModel.Models;
 
 namespace TheBlazorVault.Components.Pages;
 
@@ -20,18 +17,18 @@ public partial class VaultsPage
     [Inject]
     private NavigationManager            Navigation { get; set; } = default!;
     [Inject]
-    private IJSRuntime                   JS{ get; set; } = default!;
+    private IJSRuntime                   Js{ get; set; } = default!;
 
     #endregion
 
     private List<VaultDto>?   _vaults;
     private string?           _errorMessage;
 
-    private VaultDtoCreation  _newVault = new VaultDtoCreation();
+    private VaultDtoCreation  _newVault = new();
 
-    private VaultDto _currentVault = new VaultDto();
+    private VaultDto _currentVault = new();
 
-    public bool IsAtemptConnecting { get; set; } = false;
+    private bool IsAtemptConnecting { get; set; }
 
 
 
@@ -99,7 +96,7 @@ public partial class VaultsPage
     }
 
     /* ------------  entrer dans un vault  ------------ */
-    private void EnterVault(Byte[] hashPassword)
+    private void EnterVault(byte[]? hashPassword)
     {
         try
         {

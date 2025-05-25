@@ -165,7 +165,7 @@ namespace Api.Controller
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost("{vaultId}/canEnter")]
-        public async Task<IActionResult> CanEnterVault(int vaultId, [FromBody] Byte[] dto)
+        public async Task<IActionResult> CanEnterVault(int vaultId, [FromBody] byte[] dto)
         {
             var userId = _userService.CurrentUserId;
             if (userId == 0)

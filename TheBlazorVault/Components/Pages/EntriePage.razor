@@ -1,12 +1,16 @@
 ﻿@page "/entries/{CurrentVaultId:int}"
 @using TheBlazorVault.Components.Pages.Modules
 @inject CallServices CallServices
-@inject IDialogService DialogService 
 @rendermode InteractiveServer
 
 <MudButton Class="mt-4" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => OpenDialog("Create", _currentEntrie))"> 
     Ajouter une entrée
 </MudButton>
+
+@*Je n'utilisa pas de MudTable car j'ai appris que Mud utilisait son propre composant table.
+Par conséquant je pense comprendre que je suis obligé de manipuler les données en C#.
+Par le même occasion je pense que c'est un problème inhérent au format WebServer et que sous WebAssembly je ne pense pas que ce type de problème surviendrais.  
+dans ce cas de figure (ou j'ai déja commencé sous WebServer) il serais envisageable de rendre cette partie "hybrid" et de passer cette page en webassembly (je n'ai cependant pas fait mes rechercher dessus)*@
 
 <div>
     <table id="coffreData" class="table table-striped">

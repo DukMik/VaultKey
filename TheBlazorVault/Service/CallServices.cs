@@ -89,7 +89,7 @@ namespace TheBlazorVault.Service
 
 
 
-        public Task<HttpResponseMessage> CanEnterVaultAsync(int id,Byte[] vaultPassword)
+        public Task<HttpResponseMessage> CanEnterVaultAsync(int id,byte[] vaultPassword)
             => downstreamApi.CallApiForUserAsync(
                 "EntraIDAuthWebAPI",
                 o =>

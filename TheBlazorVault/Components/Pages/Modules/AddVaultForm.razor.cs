@@ -20,8 +20,8 @@ public partial class AddVaultForm : ComponentBase
     
     public async void CreateMethodCallback()
     {
-        var passwordHash = await IjsRuntime.InvokeAsync<Byte[]>("getAndHashPassword");
-        var salt = await IjsRuntime.InvokeAsync<Byte[]>("generateSalt");  
+        var passwordHash = await IjsRuntime.InvokeAsync<byte[]>("getAndHashPassword");
+        var salt = await IjsRuntime.InvokeAsync<byte[]>("generateSalt");  
         
         var newVault = new VaultDtoCreation()
         {
