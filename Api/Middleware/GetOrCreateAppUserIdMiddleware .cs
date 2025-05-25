@@ -23,7 +23,6 @@ namespace Api.Middleware
                     || !Guid.TryParse(context.User.GetObjectId(), out Guid externalUserId))
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    return;
                 }
                 else
                 {

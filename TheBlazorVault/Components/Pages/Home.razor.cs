@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
-using System;
+
 
 namespace TheBlazorVault.Components.Pages
 {
     public partial class Home
     {
-        [Inject]
-        private NavigationManager NavigationManager { get; set; }
+        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
         private void Logout()
         {

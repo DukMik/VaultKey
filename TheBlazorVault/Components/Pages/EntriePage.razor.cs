@@ -18,8 +18,8 @@ namespace TheBlazorVault.Components.Pages
         private string _errorMessage = "";
 
         private MudForm _form = new MudForm();
-        private bool isEdit;
-        private string typemodal = "";
+        private bool _isEdit;
+        private string _typemodal = "";
 
         private EntrieDtoCreation _currentEntrieCreation = new();
         private EntrieDto _currentEntrie = new EntrieDto
@@ -66,8 +66,8 @@ namespace TheBlazorVault.Components.Pages
             
             if (isValidBool)
             {
-                isEdit = true;
-                typemodal = typeButton;
+                _isEdit = true;
+                _typemodal = typeButton;
                 _currentEntrie = entrie;
                 StateHasChanged();
             } 
@@ -89,7 +89,7 @@ namespace TheBlazorVault.Components.Pages
                     UrlData = entrie.UrlData,
                     CommentData = entrie.CommentData   
                 };
-                isEdit = true;
+                _isEdit = true;
 
                 var response = await CallServices.AddEntryAsync(CurrentVaultId, entrieDtoCreation);
                 if (response.IsSuccessStatusCode)
@@ -131,7 +131,7 @@ namespace TheBlazorVault.Components.Pages
         
         private void Close()
         {
-            isEdit = false;
+            _isEdit = false;
             StateHasChanged();
         }
     }

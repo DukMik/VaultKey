@@ -4,7 +4,7 @@ namespace Api.Service
 {
     /// <summary>
     /// Service de gestion de l'utilisateur applicatif, qui délègue les opérations de récupération/création au repository.
-    /// </summary
+    /// </summary>
     public class UserService(UserRepositorie userRepositorie)
     {       
 

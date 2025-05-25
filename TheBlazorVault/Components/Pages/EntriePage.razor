@@ -29,8 +29,8 @@ dans ce cas de figure (ou j'ai déja commencé sous WebServer) il serais envisag
 </div>
 
 <div>
-    @if (isEdit)
+    @if (_isEdit)
     {
-        <EntrieDialog EntrieUpdate="_currentEntrie" CloseCallback="Close" UpdateCallback="UpdateCurrentEntrieToApi" CreateCallback="CreateNewEntrieToApi" IsCreateOrIsEdit=@typemodal></EntrieDialog>
+        <EntrieDialog EntrieUpdate="_currentEntrie" CloseCallback="Close" UpdateCallback="UpdateCurrentEntrieToApi" CreateCallback="CreateNewEntrieToApi" IsCreateOrIsEdit=@_typemodal></EntrieDialog>
     }
 </div>

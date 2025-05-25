@@ -53,7 +53,7 @@ namespace TheBlazorVault.Components.AtomCore
                 // Utilise le pattern switch pour extraire le chemin et la query d'une URI absolue ou retourner "/" par défaut.
                 RedirectUri = returnUrl switch
                 {
-                    string => new Uri(returnUrl, UriKind.Absolute).PathAndQuery,
+                    not null => new Uri(returnUrl, UriKind.Absolute).PathAndQuery,
                     null => "/",
                 }
             };

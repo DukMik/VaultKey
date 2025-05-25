@@ -1,7 +1,5 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using TheApiDto;
-using System.Security.Cryptography;
 using TheBlazorVault.Service;
 using Microsoft.JSInterop;
 
@@ -19,8 +17,8 @@ public partial class EntrieDialog : ComponentBase
     public EntrieDto? EntrieUpdate { get; set; }
 
     [Parameter]
-    public EventCallback<int> CloseCallback { get; set; } = default;
-
+    public EventCallback<int> CloseCallback { get; set; }
+    
     [Parameter]
     public EventCallback<EntrieDto> UpdateCallback { get; set; }
 
@@ -30,7 +28,7 @@ public partial class EntrieDialog : ComponentBase
     [Parameter]
     public string IsCreateOrIsEdit { get; set; } = "";
 
-    public record MiniCrypt(byte[] cipherData, byte[] iv, byte[] authTag);
+    public record MiniCrypt(byte[] CipherData, byte[] Iv, byte[] AuthTag);
 
     //public int CurrentVault { get; set; } = 0;
     //public bool desactivated { get; set; } = false;
@@ -115,11 +113,11 @@ public partial class EntrieDialog : ComponentBase
 
         EntrieDtoCreation = new EntrieDtoCreation
         {
-            NameData = new EncryptedDataDtoCreation() { Iv = name.iv, CryptedData = name.cipherData, Tag = name.authTag },
-            UserNameData = new EncryptedDataDtoCreation() { Iv = username.iv, CryptedData = username.cipherData, Tag = username.authTag },
-            UrlData = new EncryptedDataDtoCreation() { Iv = url.iv, CryptedData = url.cipherData, Tag = url.authTag },
-            PasswordData = new EncryptedDataDtoCreation() { Iv = password.iv, CryptedData = password.cipherData, Tag = password.authTag },
-            CommentData = new EncryptedDataDtoCreation() { Iv = comment.iv, CryptedData = comment.cipherData, Tag = comment.authTag },
+            NameData = new EncryptedDataDtoCreation() { Iv = name.Iv, CryptedData = name.CipherData, Tag = name.AuthTag },
+            UserNameData = new EncryptedDataDtoCreation() { Iv = username.Iv, CryptedData = username.CipherData, Tag = username.AuthTag },
+            UrlData = new EncryptedDataDtoCreation() { Iv = url.Iv, CryptedData = url.CipherData, Tag = url.AuthTag },
+            PasswordData = new EncryptedDataDtoCreation() { Iv = password.Iv, CryptedData = password.CipherData, Tag = password.AuthTag },
+            CommentData = new EncryptedDataDtoCreation() { Iv = comment.Iv, CryptedData = comment.CipherData, Tag = comment.AuthTag },
         };
 
         // Invoking the CreateCallback with the newly created EntrieUncryptedDto

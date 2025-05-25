@@ -18,8 +18,6 @@ public class AuthenticatorService
     /// </summary>
     public void RegisterConnection(int userId, int vaultId)
     {
-        // Supprime les anciennes connexions de ce user/vault
-        RemoveConnection(userId, vaultId);
         _connections.Add(new UserVaultConnection(userId, vaultId, DateTime.UtcNow));
     }
 
@@ -36,12 +34,5 @@ public class AuthenticatorService
         );
     }
 
-    /// <summary>
-    /// Supprime la connexion d'un user/vault (utilitaire interne).
-    /// </summary>
-    private void RemoveConnection(int userId, int vaultId)
-    {
-        // ConcurrentBag ne supporte pas Remove, donc on filtre lors de la vérification
-        // (optionnel: on peut recréer la bag si besoin de nettoyage)
-    }
+    
 }
