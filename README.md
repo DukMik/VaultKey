@@ -8,7 +8,11 @@ VaultKey is a secure password manager application built with modern technologies
 - **Frontend**: Blazor Server with Interactive Server rendering
 - **UI Framework**: MudBlazor 8.5.1
 - **Authentication**: Microsoft Identity (Microsoft.Identity.Web.UI 3.8.3)
+- **Database**: SQLite for lightweight, file-based data storage
 - **Project Architecture**: Multi-project solution with API, Blazor frontend, and shared DTOs
+
+## Deployment
+The application can be launched instantly without complex setup requirements. The SQLite database is automatically created on first run, making deployment simple and straightforward.
 
 ## Key Features
 - Secure password storage in vaults
@@ -35,13 +39,20 @@ VaultKey is a secure password manager application built with modern technologies
 - **.NET Version**: .NET 9.0
 
 ## Future Improvements
-Several potential enhancements could be made to the project:
-- **Mobile Application**: Developing a companion mobile app for on-the-go access
-- **Browser Extensions**: Creating extensions for major browsers to auto-fill credentials
-- **Advanced Encryption**: Implementing additional encryption layers for even higher security
-- **Password Health Analysis**: Adding features to evaluate password strength and suggest improvements
-- **Secure Notes and File Storage**: Expanding functionality to store secure notes and encrypted files
-- **Offline Mode**: Adding capability to access vaults without internet connection
+Several critical enhancements could be implemented to complete the application:
+
+- **Vault and Entry Management**: 
+  - Implement edit functionality for existing vaults and entries
+  - Add delete capability for entries to maintain vault cleanliness
+
+- **Enhanced Security**: 
+  - Encrypt the decryption key currently stored in local storage
+  - Add two-factor authentication options
+
+- **UI/UX Improvements**: 
+  - Better leverage MudBlazor component library for a more polished interface
+  - Add customizable themes and accessibility features
+
 
 These improvements were not implemented due to time constraints and the learning curve associated with web development and API technologies, which were new areas for me despite having prior experience with development projects of similar scale.
 
@@ -60,7 +71,11 @@ VaultKey est une application de gestion de mots de passe sécurisée construite 
 - **Frontend** : Blazor Server avec rendu InteractiveServer
 - **Framework UI** : MudBlazor 8.5.1
 - **Authentification** : Microsoft Identity (Microsoft.Identity.Web.UI 3.8.3)
+- **Base de Données** : SQLite pour un stockage de données léger basé sur fichier
 - **Architecture du Projet** : Solution multi-projets avec API, frontend Blazor, et DTOs partagés
+
+## Déploiement
+L'application peut être lancée instantanément sans configuration complexe préalable. La base de données SQLite est automatiquement créée lors du premier lancement, rendant le déploiement simple et direct.
 
 ## Fonctionnalités Principales
 - Stockage sécurisé des mots de passe dans des coffres-forts
@@ -87,13 +102,21 @@ VaultKey est une application de gestion de mots de passe sécurisée construite 
 - **Version .NET** : .NET 9.0
 
 ## Améliorations Futures
-Plusieurs améliorations potentielles pourraient être apportées au projet :
-- **Application Mobile** : Développement d'une application mobile complémentaire pour un accès en déplacement
-- **Extensions de Navigateur** : Création d'extensions pour les principaux navigateurs pour remplir automatiquement les identifiants
-- **Chiffrement Avancé** : Mise en œuvre de couches de chiffrement supplémentaires pour une sécurité encore plus élevée
-- **Analyse de la Santé des Mots de Passe** : Ajout de fonctionnalités pour évaluer la robustesse des mots de passe et suggérer des améliorations
-- **Stockage de Notes et Fichiers Sécurisés** : Expansion des fonctionnalités pour stocker des notes sécurisées et des fichiers chiffrés
-- **Mode Hors Ligne** : Ajout de la capacité d'accéder aux coffres-forts sans connexion Internet
+Plusieurs améliorations essentielles pourraient être mises en œuvre pour compléter l'application :
+
+- **Gestion des Coffres-forts et des Entrées** : 
+  - Implémenter la fonctionnalité de modification des coffres-forts et des entrées existants
+  - Ajouter la possibilité de supprimer des entrées pour maintenir les coffres-forts organisés
+
+- **Sécurité Renforcée** : 
+  - Chiffrer la clé de déchiffrement actuellement stockée dans le local storage
+  - Ajouter des options d'authentification à deux facteurs
+
+- **Améliorations de l'Interface Utilisateur** : 
+  - Mieux exploiter la bibliothèque de composants MudBlazor pour une interface plus raffinée
+  - Ajouter des thèmes personnalisables et des fonctionnalités d'accessibilité
+
+
 
 Ces améliorations n'ont pas été mises en œuvre en raison des contraintes de temps et de la courbe d'apprentissage associée au développement web et aux technologies d'API, qui étaient des domaines nouveaux pour moi malgré une expérience préalable dans des projets de développement d'envergure similaire.
 
